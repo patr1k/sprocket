@@ -5,17 +5,34 @@ import NewLicensee from "./Cartridge/NewLicensee";
 import OldLicensee from "./Cartridge/OldLicensee";
 import RamSize from "./Cartridge/RamSize";
 import RomSize from "./Cartridge/RomSize";
+import GameboyConfig from "./GameboyConfig";
 import Memory from "./Memory";
+import PPU from "./PPU/PPU";
 
 class Gameboy {
+    public ZoomFactor = 4;
+    public readonly Width: number;
+    public readonly Height: number;
+
+    private Canvas: HTMLCanvasElement;
+    private Ctx: CanvasRenderingContext2D;
+
     private Mem: Memory;
     private CPU: CPU;
-
+    private PPU: PPU;
     private CartInfo: CartridgeInfo;
 
-    constructor() {
+    constructor(config: GameboyConfig) {
+        this.Width = 160 * this.ZoomFactor;
+        this.Height = 144 * this.ZoomFactor;
+        this.Canvas = config.canvas;
+        this.Canvas.width = this.Width;
+        this.Canvas.height = this.Height;
+        this.Ctx = this.Canvas.getContext('2d');
+
         this.Mem = new Memory(8000);
         this.CPU = new CPU(this.Mem);
+        this.PPU = new PPU(this.CPU, this.Mem, this.Ctx, config.zoom || 1);
     }
 
     async StartRom(romFile: File) {

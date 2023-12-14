@@ -1,10 +1,11 @@
-import Gameboy from './Gameboy';
+import Gameboy from "./Gameboy";
 
-const gb = new Gameboy();
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('screen') as HTMLCanvasElement;
+    const gb = new Gameboy({ canvas, zoom: 4 });
 
-const file = document.getElementById('romFile') as HTMLInputElement;
-file.addEventListener('change', () => {
-    gb.StartRom(file.files[0]);
+    const file = document.getElementById('romFile') as HTMLInputElement;
+    file.addEventListener('change', () => {
+        gb.StartRom(file.files[0]);
+    });
 });
-
-//gb.StartRom(`${__dirname}/roms/cpu_instrs/cpu_instrs.gb`);

@@ -2,8 +2,7 @@ import CPU from "./CPU";
 
 const CPU_MMU = {
     LD_BC_IM: (cpu: CPU) => {
-        cpu.Reg.B = cpu.FetchByte();
-        cpu.Reg.C = cpu.FetchByte();
+        cpu.Reg.BC(cpu.FetchWord());
     },
     LD_pBC_A: (cpu: CPU) => {
         cpu.Mem.WriteByte(cpu.Reg.BC(), cpu.Reg.A);
@@ -19,7 +18,7 @@ const CPU_MMU = {
         cpu.Mem.WriteWord(addr, cpu.Reg.SP);
     },
     LD_A_pBC: (cpu: CPU) => {
-        cpu.Reg.A = cpu.Mem.ReadInt(cpu.Reg.BC(), 2);
+        cpu.Reg.A = cpu.Mem.ReadByte(cpu.Reg.BC());
     },
 };
 

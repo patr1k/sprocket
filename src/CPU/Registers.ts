@@ -29,7 +29,7 @@ class Registers {
         if (null === newVal) {
             return (this.C << 8) | this.B;
         } else {
-            this.B = newVal & 0xF;
+            this.B = newVal & 0xFF;
             this.C = newVal >> 8;
         }
     }
@@ -38,7 +38,7 @@ class Registers {
         if (null === newVal) {
             return (this.E << 8) | this.D;
         } else {
-            this.D = newVal & 0xF;
+            this.D = newVal & 0xFF;
             this.E = newVal >> 8;
         }
     }
@@ -47,7 +47,7 @@ class Registers {
         if (null === newVal) {
             return (this.L << 8) | this.H;
         } else {
-            this.H = newVal & 0xF;
+            this.H = newVal & 0xFF;
             this.L = newVal >> 8;
         }
     }

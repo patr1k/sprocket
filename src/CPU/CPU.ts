@@ -67,9 +67,22 @@ class CPU {
         this.FetchOp();
 
         switch (this.Ins) {
+            case 0x00: /** no op */ break;
             case 0x01: CPU_MMU.LD_BC_IM(this); break;
             case 0x02: CPU_MMU.LD_pBC_A(this); break;
             case 0x03: CPU_ALU.INC_BC(this); break;
+            case 0x04: CPU_ALU.INC_B(this); break;
+            case 0x05: CPU_ALU.DEC_B(this); break;
+            case 0x06: CPU_MMU.LD_B_IM(this); break;
+            case 0x07: CPU_ALU.RLCA(this); break;
+            case 0x08: CPU_MMU.LD_ABS_SP(this); break;
+            case 0x09: CPU_ALU.ADD_HL_BC(this); break;
+            case 0x0A: CPU_MMU.LD_A_pBC(this); break;
+            case 0x0B: CPU_ALU.DEC_BC(this); break;
+            case 0x0C: CPU_ALU.INC_C(this); break;
+            case 0x0D: CPU_ALU.DEC_C(this); break;
+            case 0x0E: CPU_MMU.LD_C_IM(this); break;
+            case 0x0F: CPU_ALU.RRCA(this); break;
         }
     }
 }
