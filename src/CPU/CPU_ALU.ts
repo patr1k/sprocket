@@ -2,15 +2,15 @@ import CPU from "./CPU";
 
 const CPU_ALU = {
     INC_BC: (cpu: CPU) => {
-        let val = cpu.Reg.BC();
+        let val = cpu.Reg.BC;
         val = (val === 0xFFFF) ? 0 : val + 1;
-        cpu.Reg.BC(val);
+        cpu.Reg.BC = val;
         cpu.Ticks += 8;
     },
     DEC_BC: (cpu: CPU) => {
-        let val = cpu.Reg.BC();
+        let val = cpu.Reg.BC;
         val = (val === 0) ? 0xFFFF : val - 1;
-        cpu.Reg.BC(val);
+        cpu.Reg.BC = val;
         cpu.Ticks += 8;
     },
     INC_B: (cpu: CPU) => {
@@ -66,10 +66,10 @@ const CPU_ALU = {
         cpu.Ticks += 4;
     },
     ADD_HL_BC: (cpu: CPU) => {
-        cpu.Flags.H = ((cpu.Reg.HL() & 0x0FFF) + (cpu.Reg.BC() & 0x0FFF)) > 0x0FFF;
-        const val = cpu.Reg.HL() + cpu.Reg.BC();
+        cpu.Flags.H = ((cpu.Reg.HL & 0x0FFF) + (cpu.Reg.BC & 0x0FFF)) > 0x0FFF;
+        const val = cpu.Reg.HL + cpu.Reg.BC;
         cpu.Flags.C = val > 0xFFFF;
-        cpu.Reg.HL(val & 0xFFFF);
+        cpu.Reg.HL = val & 0xFFFF;
         cpu.Flags.N = false;
         cpu.Ticks += 8;
     },

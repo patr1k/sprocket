@@ -1,5 +1,5 @@
 import CPU from "../CPU/CPU";
-import Memory from "../Memory";
+import Memory from "../Memory/Memory";
 import { Byte } from "../Utils";
 import Flags from "./Flags";
 import RenderMode from "./RenderMode";

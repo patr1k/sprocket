@@ -25,31 +25,31 @@ class Registers {
         this.PC = 0x0000;
     }
 
-    BC(newVal: Word = null): Word {
-        if (null === newVal) {
-            return (this.C << 8) | this.B;
-        } else {
-            this.B = newVal & 0xFF;
-            this.C = newVal >> 8;
-        }
+    public get BC(): Word {
+        return (this.C << 8) | this.B;
     }
 
-    DE(newVal: Word = null): Word {
-        if (null === newVal) {
-            return (this.E << 8) | this.D;
-        } else {
-            this.D = newVal & 0xFF;
-            this.E = newVal >> 8;
-        }
+    public set BC(word: Word) {
+        this.B = word & 0xFF;
+        this.C = word >> 8;
     }
 
-    HL(newVal: Word = null): Word {
-        if (null === newVal) {
-            return (this.L << 8) | this.H;
-        } else {
-            this.H = newVal & 0xFF;
-            this.L = newVal >> 8;
-        }
+    public get DE(): Word {
+        return (this.E << 8) | this.D;
+    }
+
+    public set DE(word: Word) {
+        this.D = word & 0xFF;
+        this.E = word >> 8;
+    }
+
+    public get HL(): Word {
+        return (this.L << 8) | this.H;
+    }
+
+    public set HL(word: Word) {
+        this.H = word & 0xFF;
+        this.L = word >> 8;
     }
 }
 

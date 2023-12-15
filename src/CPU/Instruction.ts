@@ -16,10 +16,22 @@ enum Instruction {
     LD_C_IM = 0x0E,
     RRCA = 0x0F,
     STOP = 0x10,
+    LD_DE_IM = 0x11,
+    LD_A_pDE = 0x1A,
 
-
-
+    JR_NZ_REL = 0x20,
+    LD_HL_IM = 0x21,
+    LD_SP_IM = 0x31,
+    LD_pHLd_A = 0x32,
+    LD_A_IM = 0x3E,
     HALT = 0x76,
+    LD_pHL_A = 0x77,
+    XOR_A_A = 0xAF,
+
+    CALL_ABS = 0xCD,
+
+    LD_pC_A = 0xE2,
+    LD_ABS_A = 0xEA,
 }
 
 export default Instruction;

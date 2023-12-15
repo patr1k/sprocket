@@ -6,7 +6,7 @@ import OldLicensee from "./Cartridge/OldLicensee";
 import RamSize from "./Cartridge/RamSize";
 import RomSize from "./Cartridge/RomSize";
 import GameboyConfig from "./GameboyConfig";
-import Memory from "./Memory";
+import Memory from "./Memory/Memory";
 import PPU from "./PPU/PPU";
 
 class Gameboy {
@@ -30,7 +30,7 @@ class Gameboy {
         this.Canvas.height = this.Height;
         this.Ctx = this.Canvas.getContext('2d');
 
-        this.Mem = new Memory(8000);
+        this.Mem = new Memory();
         this.CPU = new CPU(this.Mem);
         this.PPU = new PPU(this.CPU, this.Mem, this.Ctx, config.zoom || 1);
     }
@@ -38,29 +38,15 @@ class Gameboy {
     async StartRom(romFile: File) {
         const buffer = await romFile.arrayBuffer();
 
-        this.Mem.LoadRom(buffer);
-
-        this.ParseHeader();
+        const info = this.Mem.LoadROM(buffer);
+        if (info) {
+            this.CartInfo = info;
+        } else {
+            console.log('Failed to load ROM');
+        }
 
         this.CPU.Start();
         this.OutputInfo();
-    }
-
-    ParseHeader() {
-        this.CartInfo = {
-            Title: this.Mem.ReadString(0x0134),
-            ManufacturerCode: this.Mem.ReadString(0x013F, 4),
-            CGB_Flag: (0xC0 === this.Mem.ReadByte(0x0143)),
-            SGB_Flag: (0x03 === this.Mem.ReadByte(0x0146)),
-            CartType: this.Mem.ReadByte(0x0147),
-            RomSize: this.Mem.ReadByte(0x0148),
-            RamSize: this.Mem.ReadByte(0x0149),
-            DestCode: this.Mem.ReadByte(0x014A),
-            Licensee: (0x33 === this.Mem.ReadByte(0x014B)) ? NewLicensee[this.Mem.ReadString(0x0144, 2)] : OldLicensee[this.Mem.ReadByte(0x014B)],
-            RomVersion: this.Mem.ReadByte(0x014C),
-            HeaderChecksum: this.Mem.ReadByte(0x014D),
-            GlobalChecksum: this.Mem.ReadInt(0x014E, 2)
-        };
     }
 
     OutputInfo() {
