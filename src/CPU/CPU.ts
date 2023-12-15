@@ -92,17 +92,17 @@ class CPU {
             case 0x0D: CPU_ALU.DEC_C(this); break;
             case 0x0E: CPU_MMU.LD_C_IM(this); break;
             case 0x0F: CPU_ALU.RRCA(this); break;
-
-
-
+            // ...
             case 0x20: CPU_PGM.JR_NZ_REL(this); break;
             case 0x21: CPU_MMU.LD_HL_IM(this); break;
             case 0x31: CPU_MMU.LD_SP_IM(this); break;
             case 0x32: CPU_MMU.LD_pHLd_A(this); break;
             case 0x3E: CPU_MMU.LD_A_IM(this); break;
             case 0xAF: CPU_ALU.XOR_A_A(this); break;
-
+            // ...
             case 0xCB: this.ExecuteEx(); break;
+            // ...
+            case 0xE2: CPU_MMU.LD_pC_A(this); break;
         }
     }
 
