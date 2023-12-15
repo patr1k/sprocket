@@ -17,6 +17,8 @@ enum Instruction {
     RRCA = 0x0F,
     STOP = 0x10,
 
+
+
     HALT = 0x76,
 }
 

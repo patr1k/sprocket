@@ -2,7 +2,9 @@ import Clock from "../Clock";
 import Memory from "../Memory";
 import { Byte, Word } from "../Utils";
 import CPU_ALU from "./CPU_ALU";
+import CPU_BIT from "./CPU_BIT";
 import CPU_MMU from "./CPU_MMU";
+import CPU_PGM from "./CPU_PGM";
 import Flags from "./Flags";
 import Registers from "./Registers";
 
@@ -16,7 +18,9 @@ class CPU {
         H: false,
         C: false
     };
+    Ticks: number;
     Ins: Byte;
+    InsEx: Byte;
     BootROM: number[] = [
         0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
         0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,
@@ -39,6 +43,7 @@ class CPU {
     constructor(mem: Memory) {
         this.Mem = mem;
         this.Reg = new Registers();
+        this.Ticks = 0;
     }
 
     Start() {
@@ -51,6 +56,10 @@ class CPU {
 
     FetchOp() {
         this.Ins = this.FetchByte();
+    }
+
+    FetchOpEx() {
+        this.InsEx = this.FetchByte();
     }
 
     FetchByte(): Byte {
@@ -83,6 +92,91 @@ class CPU {
             case 0x0D: CPU_ALU.DEC_C(this); break;
             case 0x0E: CPU_MMU.LD_C_IM(this); break;
             case 0x0F: CPU_ALU.RRCA(this); break;
+
+
+
+            case 0x20: CPU_PGM.JR_NZ_REL(this); break;
+            case 0x21: CPU_MMU.LD_HL_IM(this); break;
+            case 0x31: CPU_MMU.LD_SP_IM(this); break;
+            case 0x32: CPU_MMU.LD_pHLd_A(this); break;
+            case 0x3E: CPU_MMU.LD_A_IM(this); break;
+            case 0xAF: CPU_ALU.XOR_A_A(this); break;
+
+            case 0xCB: this.ExecuteEx(); break;
+        }
+    }
+
+    ExecuteEx() {
+        this.FetchOpEx();
+
+        switch (this.InsEx) {
+            case 0x40: CPU_BIT.BIT_0_B(this); break;
+            case 0x41: CPU_BIT.BIT_0_C(this); break;
+            case 0x42: CPU_BIT.BIT_0_D(this); break;
+            case 0x43: CPU_BIT.BIT_0_E(this); break;
+            case 0x44: CPU_BIT.BIT_0_H(this); break;
+            case 0x45: CPU_BIT.BIT_0_L(this); break;
+            case 0x46: CPU_BIT.BIT_0_pHL(this); break;
+            case 0x47: CPU_BIT.BIT_0_A(this); break;
+            case 0x48: CPU_BIT.BIT_1_B(this); break;
+            case 0x49: CPU_BIT.BIT_1_C(this); break;
+            case 0x4A: CPU_BIT.BIT_1_D(this); break;
+            case 0x4B: CPU_BIT.BIT_1_E(this); break;
+            case 0x4C: CPU_BIT.BIT_1_H(this); break;
+            case 0x4D: CPU_BIT.BIT_1_L(this); break;
+            case 0x4E: CPU_BIT.BIT_1_pHL(this); break;
+            case 0x4F: CPU_BIT.BIT_1_A(this); break;
+
+            case 0x50: CPU_BIT.BIT_2_B(this); break;
+            case 0x51: CPU_BIT.BIT_2_C(this); break;
+            case 0x52: CPU_BIT.BIT_2_D(this); break;
+            case 0x53: CPU_BIT.BIT_2_E(this); break;
+            case 0x54: CPU_BIT.BIT_2_H(this); break;
+            case 0x55: CPU_BIT.BIT_2_L(this); break;
+            case 0x56: CPU_BIT.BIT_2_pHL(this); break;
+            case 0x57: CPU_BIT.BIT_2_A(this); break;
+            case 0x58: CPU_BIT.BIT_3_B(this); break;
+            case 0x59: CPU_BIT.BIT_3_C(this); break;
+            case 0x5A: CPU_BIT.BIT_3_D(this); break;
+            case 0x5B: CPU_BIT.BIT_3_E(this); break;
+            case 0x5C: CPU_BIT.BIT_3_H(this); break;
+            case 0x5D: CPU_BIT.BIT_3_L(this); break;
+            case 0x5E: CPU_BIT.BIT_3_pHL(this); break;
+            case 0x5F: CPU_BIT.BIT_3_A(this); break;
+
+            case 0x60: CPU_BIT.BIT_4_B(this); break;
+            case 0x61: CPU_BIT.BIT_4_C(this); break;
+            case 0x62: CPU_BIT.BIT_4_D(this); break;
+            case 0x63: CPU_BIT.BIT_4_E(this); break;
+            case 0x64: CPU_BIT.BIT_4_H(this); break;
+            case 0x65: CPU_BIT.BIT_4_L(this); break;
+            case 0x66: CPU_BIT.BIT_4_pHL(this); break;
+            case 0x67: CPU_BIT.BIT_4_A(this); break;
+            case 0x68: CPU_BIT.BIT_5_B(this); break;
+            case 0x69: CPU_BIT.BIT_5_C(this); break;
+            case 0x6A: CPU_BIT.BIT_5_D(this); break;
+            case 0x6B: CPU_BIT.BIT_5_E(this); break;
+            case 0x6C: CPU_BIT.BIT_5_H(this); break;
+            case 0x6D: CPU_BIT.BIT_5_L(this); break;
+            case 0x6E: CPU_BIT.BIT_5_pHL(this); break;
+            case 0x6F: CPU_BIT.BIT_5_A(this); break;
+
+            case 0x70: CPU_BIT.BIT_6_B(this); break;
+            case 0x71: CPU_BIT.BIT_6_C(this); break;
+            case 0x72: CPU_BIT.BIT_6_D(this); break;
+            case 0x73: CPU_BIT.BIT_6_E(this); break;
+            case 0x74: CPU_BIT.BIT_6_H(this); break;
+            case 0x75: CPU_BIT.BIT_6_L(this); break;
+            case 0x76: CPU_BIT.BIT_6_pHL(this); break;
+            case 0x77: CPU_BIT.BIT_6_A(this); break;
+            case 0x78: CPU_BIT.BIT_7_B(this); break;
+            case 0x79: CPU_BIT.BIT_7_C(this); break;
+            case 0x7A: CPU_BIT.BIT_7_D(this); break;
+            case 0x7B: CPU_BIT.BIT_7_E(this); break;
+            case 0x7C: CPU_BIT.BIT_7_H(this); break;
+            case 0x7D: CPU_BIT.BIT_7_L(this); break;
+            case 0x7E: CPU_BIT.BIT_7_pHL(this); break;
+            case 0x7F: CPU_BIT.BIT_7_A(this); break;
         }
     }
 }

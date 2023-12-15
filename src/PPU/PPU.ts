@@ -20,7 +20,8 @@ class PPU {
     private static Width: number = 160;
     private static Height: number = 144;
 
-    counter: number = 0;
+    LX: number = 0;
+    LY: number = 0;
 
     constructor(cpu: CPU, mem: Memory, ctx: CanvasRenderingContext2D, zoom: number = 1) {
         this.CPU = cpu;
@@ -34,21 +35,34 @@ class PPU {
         this.LCD.fillStyle = '#000000';
         this.LCD.fillRect(0, 0, this.ZoomWidth, this.ZoomHeight);
 
-        // setTimeout(() => this.Draw(Date.now()), 10);
+        // setTimeout(() => this.Draw(Date.now()), 16);
     }
 
     Draw(time: number) {
-        this.counter += 0.00001;
-        for (let y = 0; y < this.ZoomHeight; y += this.Zoom) {
-            for (let x = 0; x < this.ZoomWidth; x += this.Zoom) {
-                let shade = Math.sin(this.counter);
-                let color = Math.round(0xFFFFFF * shade);
-                this.LCD.fillStyle = `#${color.toString(16)}`;
-                this.LCD.fillRect(x, y, this.Zoom, this.Zoom);
+        if (this.LX < 455) {
+            this.LX++;
+        } else {
+            this.LX = 0;
+            if (this.LY < 153) {
+                this.LY++;
+            } else {
+                this.LY = 0;
             }
         }
 
-        setTimeout(() => this.Draw(Date.now()), 10);
+        if (this.LY >= 144) {
+            this.Mode = RenderMode.V_Blank;
+        } else {
+            if (this.LX < 80) {
+                this.Mode = RenderMode.OAM_Scan;
+            } else if (this.LX < 144) {
+                this.Mode = RenderMode.Drawing;
+            } else {
+                this.Mode = RenderMode.H_Blank;
+            }
+        }
+
+        setTimeout(() => this.Draw(Date.now()), 16);
     }
 
     LCDEnabled(bit: boolean = null): boolean {
