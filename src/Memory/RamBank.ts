@@ -1,8 +1,8 @@
 import { Byte, Word } from "../Utils";
 
 class RamBank {
-  private size: number;
-  private data: Byte[];
+  protected size: number;
+  protected data: Byte[];
 
   constructor(size: number) {
     this.size = size;

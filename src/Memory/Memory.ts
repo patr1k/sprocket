@@ -1,22 +1,39 @@
-import Bank from "../Bank";
 import Cartridge from "../Cartridge/Cartridge";
-import BankMode from "./BankMode";
 import { Byte, Word } from "../Utils";
 import CartridgeInfo from "../Cartridge/CartridgeInfo";
 import CartridgeType from "../Cartridge/CartridgeType";
 import RamBank from "./RamBank";
+import BankRegisters from "./BankRegisters";
+import RamSize from "../Cartridge/RamSize";
+import IO from "./IO";
+import MbcMode from "./MBCMode";
 
 class Memory {
     private cart: Cartridge;
 
-    private rom_banks: Bank[];
-    private ram_banks: Bank[];
+    /** WRAM Banks (8) */
+    private wram: RamBank[];
 
-    private wram: RamBank;
-    private vram: RamBank;
+    /** VRAM Banks (2) */
+    private vram: RamBank[];
 
-    private bank_mode: BankMode;
+    /** External RAM */
+    private xram: RamBank;
 
+    /** I/O Memory */
+    private io: RamBank;
+
+    /** MBC Bank Registers */
+    private bank_reg: BankRegisters = {
+        RAM_Enable: false,
+        ROM_Bank_Num: 0,
+        RAM_Bank_Num: 0,
+        Bank_Mode: 0
+    };
+
+    private mbc: MbcMode;
+
+    /** Boot ROM */
     private boot_rom: number[] = [
         0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
         0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,
@@ -37,15 +54,31 @@ class Memory {
     ];
 
     constructor() {
-        this.wram = new RamBank(0x2000);
-        this.vram = new RamBank(0x2000);
+        this.wram = [
+            new RamBank(0x1000), // Bank 0
+            new RamBank(0x1000), // Bank 1
+            new RamBank(0x1000), // Bank 2
+            new RamBank(0x1000), // Bank 3
+            new RamBank(0x1000), // Bank 4
+            new RamBank(0x1000), // Bank 5
+            new RamBank(0x1000), // Bank 6
+            new RamBank(0x1000), // Bank 7
+        ];
+
+        this.vram = [
+            new RamBank(0x2000), // Bank 0
+            new RamBank(0x2000), // Bank 1
+        ];
+
+        this.io = new IO();
     }
 
     Reset() {
-        this.wram.Reset();
-        this.vram.Reset();
+        this.wram.forEach(r => r.Reset());
+        this.vram.forEach(r => r.Reset());
+        this.io.Reset();
         this.cart = null;
-        this.bank_mode = null;
+        this.mbc = null;
     }
 
     LoadROM(data: ArrayBuffer): CartridgeInfo {
@@ -56,21 +89,37 @@ class Memory {
             case CartridgeType.MBC1:
             case CartridgeType.MBC1_RAM:
             case CartridgeType.MBC1_RAM_BAT:
-                this.bank_mode = BankMode.MBC1;
+                this.mbc = MbcMode.MBC1;
                 break;
             case CartridgeType.MBC2:
             case CartridgeType.MBC2_BAT:
-                this.bank_mode = BankMode.MBC2;
+                this.mbc = MbcMode.MBC2;
                 break;
             case CartridgeType.MBC3:
             case CartridgeType.MBC3_RAM:
             case CartridgeType.MBC3_RAM_BAT:
             case CartridgeType.MBC3_TMR_BAT:
             case CartridgeType.MBC3_TMR_RAM_BAT:
-                this.bank_mode = BankMode.MBC3;
+                this.mbc = MbcMode.MBC3;
                 break;
             case CartridgeType.HUC1_RAM_BAT:
-                this.bank_mode = BankMode.HuC1;
+                this.mbc = MbcMode.HuC1;
+                break;
+        }
+
+        // Initialize External RAM
+        switch (this.cart.Info.RamSize) {
+            case RamSize.KB8:
+                this.xram = new RamBank(0x2000);
+                break;
+            case RamSize.KB32:
+                this.xram = new RamBank(0x8000);
+                break;
+            case RamSize.KB64:
+                this.xram = new RamBank(0x10000);
+                break;
+            case RamSize.KB128:
+                this.xram = new RamBank(0x20000);
                 break;
         }
 
@@ -78,112 +127,131 @@ class Memory {
     }
 
     WriteByte(addr: Word, byte: Byte) {
+        // Bank Register Operations
+        if (addr < 0x2000) {
+            this.bank_reg.RAM_Enable = (byte & 0xF) === 0xA;
+            return;
+        } else if (addr < 0x4000) {
+            this.bank_reg.ROM_Bank_Num = byte & 0b00011111;
+            return;
+        } else if (addr < 0x6000) {
+            this.bank_reg.RAM_Bank_Num = byte & 0b0011;
+            return;
+        } else if (addr < 0x8000) {
+            this.bank_reg.Bank_Mode = byte & 0x1 ? 1 : 0;
+            return;
+        }
+
         switch (true) {
-            case (addr < 0x0100): // 0x0000 - 0x00FF
-                // Boot ROM
-
-                break;
-            case (addr < 0x4000): // 0x0000 - 0x3FFF
-                // ROM Access
-
-                break;
-            case (addr < 0x8000): // 0x4000 - 0x7FFF
-                // Switchable ROM Bank
-                break;
-
             case (addr < 0xA000): // 0x8000 - 0x9FFF
                 // Video RAM
-                return this.vram.WriteByte(byte, addr);
+                return this.vram[this.io.ReadByte(IO.VRAM_BANK) & 0b0001].WriteByte(addr - 0x8000, byte);
 
             case (addr < 0xC000): // 0xA000 - 0xBFFF
                 // Switchable RAM Bank
-                break;
-            case (addr < 0xF000): // 0xC000 - 0xEFFF
-                // Internal RAM
-                return this.wram.WriteByte(byte, addr);
+                return this.xram.WriteByte(this.bank_reg.Bank_Mode ? ((this.bank_reg.RAM_Bank_Num << 13) | (addr & 0x1FFF)) : (addr & 0x1FFF), byte);
 
-            case (addr < 0xFE00):
+            case (addr < 0xD000): // 0xC000 - 0xCFFF
+                // Internal/Work RAM (Bank 0)
+                return this.wram[0].WriteByte(addr - 0xC000, byte);
+
+            case (addr < 0xE000): // 0xD000 - 0xDFFF
+                // Internal/Work RAM (Bank 1-7)
+                return this.wram[this.io.ReadByte(IO.WRAM_BANK) & 0b0111].WriteByte(addr - 0xD000, byte);
+
+            case (addr < 0xFE00): // 0xE000 - 0xFDFF
+                // ECHO RAM (Mirror of 0xC000 - 0xDDFF)
+                return this.WriteByte(addr - 0x2000, byte);
+
+            case (addr < 0xFEA0): // 0xFE00 - 0xFE9F
+                // Object Attribute Memory (Sprite Attributes)
+                break;
+
+            case (addr < 0xFF00): // 0xFEA0 - 0xFEFF
                 // Unusable
                 break;
-            case (addr < 0xFEA0):
-                // Sprite Attribs
-                break;
-            case (addr < 0xFF00):
-                // Unusable
-                break;
-            case (addr < 0xFF4C):
+
+            case (addr < 0xFF80): // 0xFF00 - 0xFF7F
                 // I/O
                 break;
-            case (addr < 0xFF80):
-                // Unusable
-                break;
-            case (addr < 0xFFFF):
+
+            case (addr < 0xFFFF): // 0xFF80 - 0xFFFE
                 // High RAM
                 break;
-            case (addr === 0xFFFF):
+
+            case (addr === 0xFFFF): // 0xFFFF
                 // Interrupt Register
                 break;
         }
-
-        this.MBC.WriteByte(addr, byte);
-        this.mem[addr] = byte;
     }
 
     WriteWord(addr: Word, word: Word) {
-        this.mem[addr] = word & 0xFF;
-        this.mem[addr + 1] = word >> 8;
+        this.WriteByte(addr, word & 0xFF);
+        this.WriteByte(addr + 1, word >> 8);
     }
 
     ReadByte(addr: Word): Byte {
         switch (true) {
             case (addr < 0x0100): // 0x0000 - 0x00FF
                 // Boot ROM
-                return this.boot_rom[addr];
+                if (0 === this.bank_reg.Bank_Mode) {
+                    return this.boot_rom[addr];
+                } else {
+                    return this.cart.ReadByte((this.bank_reg.RAM_Bank_Num << 19) | addr);
+                }
 
             case (addr < 0x4000): // 0x0000 - 0x3FFF
                 // ROM Access
-                return this.cart.ReadByte(addr);
+                if (0 === this.bank_reg.Bank_Mode) {
+                    return this.cart.ReadByte(addr & 0x3FFF);
+                } else {
+                    return this.cart.ReadByte((this.bank_reg.RAM_Bank_Num << 19) | (addr & 0x3FFF));
+                }
 
             case (addr < 0x8000): // 0x4000 - 0x7FFF
                 // Switchable ROM Bank
-                return this.cart.ReadByte(addr);
+                return this.cart.ReadByte((this.bank_reg.RAM_Bank_Num << 19) | (this.bank_reg.ROM_Bank_Num << 14) | addr);
 
             case (addr < 0xA000): // 0x8000 - 0x9FFF
                 // Video RAM
-                return this.vram.ReadByte(addr - 0x8000);
+                return this.vram[this.io.ReadByte(IO.VRAM_BANK) & 0b0001].ReadByte(addr - 0x8000);
 
             case (addr < 0xC000): // 0xA000 - 0xBFFF
-                // Switchable RAM Bank
+                // Switchable External RAM
+                if (0 === this.bank_reg.Bank_Mode) {
+                    this.xram.ReadByte(addr & 0x1FFF);
+                } else {
+                    return this.xram.ReadByte((this.bank_reg.RAM_Bank_Num << 13) | (addr & 0x1FFF));
+                }
+
+            case (addr < 0xD000): // 0xC000 - 0xCFFF
+                // Internal/Work RAM (Bank 0)
+                return this.wram[0].ReadByte(addr - 0xC000);
+
+            case (addr < 0xE000): // 0xD000 - 0xDFFF
+                // Internal/Work RAM (Bank 1-7)
+                return this.wram[this.io.ReadByte(IO.WRAM_BANK) & 0b0111].ReadByte(addr - 0xD000);
+
+            case (addr < 0xFE00): // 0xE000 - 0xFDFF
+                // ECHO RAM
+                return this.ReadByte(addr - 0x2000);
+
+            case (addr < 0xFEA0): // 0xFE00 - 0xFE9F
+                // Object Attribute Memory (OAM)
                 break;
 
-            case (addr < 0xF000): // 0xC000 - 0xEFFF
-                // Internal RAM
-                break;
-
-            case (addr < 0xFE00):
+            case (addr < 0xFF00): // 0xFEA0 - 0xFEFF
                 console.log('Accessing unusable memory: READ %d', addr);
                 return 0x00;
 
-            case (addr < 0xFEA0):
-                // Sprite Attribs
-                break;
-
-            case (addr < 0xFF00):
-                console.log('Accessing unusable memory: READ %d', addr);
-                return 0x00;
-
-            case (addr < 0xFF4C):
+            case (addr < 0xFF80): // 0xFF00 - 0xFF7F
                 // I/O
-                break;
+                return this.io.ReadByte(addr - 0x00FF);
 
-            case (addr < 0xFF80):
-                // Unusable
-                console.log('Accessing unusable memory: READ %d', addr);
-                return 0x00;
-
-            case (addr < 0xFFFF):
+            case (addr < 0xFFFF): // 0xFF80 - 0xFFFE
                 // High RAM
                 break;
+
             case (addr === 0xFFFF):
                 // Interrupt Register
                 break;
@@ -194,7 +262,7 @@ class Memory {
     }
 
     ReadWord(addr: number): number {
-        return this.mem[addr] | (this.mem[addr + 1] << 8);
+        return this.ReadByte(addr) | (this.ReadByte(addr + 1) << 8);
     }
 
     ReadString(addr: number, len: number = 0): string {
@@ -202,13 +270,15 @@ class Memory {
         let offset = 0;
 
         if (0 === len) {
-            while (0x00 !== this.mem[addr + offset]) {
-                str += String.fromCharCode(this.mem[addr + offset]);
+            let chr = this.ReadByte(addr + offset);
+            while (0x00 !== chr) {
+                str += String.fromCharCode(chr);
                 offset++;
+                chr = this.ReadByte(addr + offset);
             }
         } else {
             while (offset < len) {
-                str += String.fromCharCode(this.mem[addr + offset]);
+                str += String.fromCharCode(this.ReadByte(addr + offset));
                 offset++;
             }
         }
@@ -219,7 +289,7 @@ class Memory {
     ReadInt(addr: number, size: number = 2): number {
         let num = 0;
         for (let i = 0; i < size; i++) {
-            num |= (this.mem[addr + i] << (i * 8));
+            num |= (this.ReadByte(addr + i) << (i * 8));
         }
         return num;
     }
