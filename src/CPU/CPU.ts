@@ -77,9 +77,23 @@ class CPU {
             case 0x0D: CPU_ALU.DEC_C(this); break;
             case 0x0E: CPU_MMU.LD_C_IM(this); break;
             case 0x0F: CPU_ALU.RRCA(this); break;
-            // ...
+            // case 0x10: CPU.STOP(this); break;
             case 0x11: CPU_MMU.LD_DE_IM(this); break;
+            case 0x12: CPU_MMU.LD_pDE_A(this); break;
+            case 0x13: CPU_ALU.INC_DE(this); break;
+            case 0x14: CPU_ALU.INC_D(this); break;
+            case 0x15: CPU_ALU.DEC_D(this); break;
+            case 0x16: CPU_MMU.LD_D_IM(this); break;
+            case 0x17: CPU_ALU.RLA(this); break;
+            case 0x18: CPU_PGM.JR_REL(this); break;
+            case 0x19: CPU_ALU.ADD_HL_DE(this); break;
             case 0x1A: CPU_MMU.LD_A_pDE(this); break;
+            case 0x1B: CPU_ALU.DEC_DE(this); break;
+            case 0x1C: CPU_ALU.INC_E(this); break;
+            case 0x1D: CPU_ALU.DEC_E(this); break;
+            case 0x1E: CPU_MMU.LD_E_IM(this); break;
+            case 0x1F: CPU_ALU.RRA(this); break;
+
             case 0x20: CPU_PGM.JR_NZ_REL(this); break;
             case 0x21: CPU_MMU.LD_HL_IM(this); break;
             case 0x31: CPU_MMU.LD_SP_IM(this); break;

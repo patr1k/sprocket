@@ -17,6 +17,12 @@ enum Instruction {
     RRCA = 0x0F,
     STOP = 0x10,
     LD_DE_IM = 0x11,
+    LD_pDE_A = 0x12,
+    INC_DE = 0x13,
+    INC_D = 0x14,
+    DEC_D = 0x15,
+    LD_D_IM = 0x16,
+    RLA = 0x17,
     LD_A_pDE = 0x1A,
 
     JR_NZ_REL = 0x20,
