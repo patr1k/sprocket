@@ -20,6 +20,14 @@ const CPU_PGM = {
         cpu.Reg.PC += TC(cpu.FetchByte());
         cpu.Ticks += 12;
     },
+    JR_Z_REL: (cpu: CPU) => {
+        if (cpu.Flags.Z) {
+            cpu.Reg.PC += TC(cpu.FetchByte());
+            cpu.Ticks += 12;
+        } else {
+            cpu.Ticks += 8;
+        }
+    },
 };
 
 export default CPU_PGM;

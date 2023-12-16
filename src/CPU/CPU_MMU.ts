@@ -26,7 +26,6 @@ const CPU_MMU = {
         cpu.Ticks += 8;
     },
 
-
     LD_A_IM: (cpu: CPU) => {
         cpu.Reg.A = cpu.FetchByte();
         cpu.Ticks += 8;
@@ -59,6 +58,12 @@ const CPU_MMU = {
         cpu.Reg.HL = addr ? addr - 1 : 0xFFFF;
         cpu.Ticks += 8;
     },
+    LD_pHLi_A: (cpu: CPU) => {
+        const addr = cpu.Reg.HL;
+        cpu.Mem.WriteByte(addr, cpu.Reg.A);
+        cpu.Reg.HL = addr < 0xFFFF ? addr + 1 : 0x0;
+        cpu.Ticks += 8;
+    },
     LD_pHL_A: (cpu: CPU) => {
         const addr = cpu.Reg.HL;
         cpu.Mem.WriteByte(addr, cpu.Reg.A);
@@ -79,6 +84,19 @@ const CPU_MMU = {
     },
     LD_E_IM: (cpu: CPU) => {
         cpu.Reg.E = cpu.FetchByte();
+        cpu.Ticks += 8;
+    },
+    LD_H_IM: (cpu: CPU) => {
+        cpu.Reg.H = cpu.FetchByte();
+        cpu.Ticks += 8;
+    },
+    LD_L_IM: (cpu: CPU) => {
+        cpu.Reg.L = cpu.FetchByte();
+        cpu.Ticks += 8;
+    },
+    LD_A_pHLi: (cpu: CPU) => {
+        cpu.Reg.A = cpu.Mem.ReadByte(cpu.Reg.HL);
+        cpu.Reg.HL = cpu.Reg.HL < 0xFFFF ? cpu.Reg.HL + 1 : 0x0;
         cpu.Ticks += 8;
     },
 };
