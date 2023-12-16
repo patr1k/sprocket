@@ -12,6 +12,10 @@ class Registers {
     public SP: Word;
     public PC: Word;
 
+    constructor() {
+        this.Reset();
+    }
+
     Reset() {
         this.A = 0x00;
         this.B = 0x00;

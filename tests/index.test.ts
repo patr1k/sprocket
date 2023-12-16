@@ -1,11 +1,11 @@
 import CPU from '../src/CPU/CPU';
 import Instruction from '../src/CPU/Instruction';
-import Memory from '../src/Memory';
+import Memory from '../src/Memory/Memory';
 
 type InstructionArg = ['BYTE' | 'WORD', number];
 
 describe('testing CPU', () => {
-    const mem = new Memory(0x8000);
+    const mem = new Memory();
     const cpu = new CPU(mem);
 
     const prepIns = (ins: Instruction, ...args: InstructionArg[]) => {
@@ -28,13 +28,13 @@ describe('testing CPU', () => {
         cpu.Reg.Reset();
         prepIns(Instruction.LD_BC_IM, ['WORD', 0x1234]);
         cpu.Execute();
-        expect(cpu.Reg.BC()).toBe(0x1234);
+        expect(cpu.Reg.BC).toBe(0x1234);
     });
 
     test('LD_pBC_A', () => {
         cpu.Reg.Reset();
         cpu.Reg.A = 0xAB;
-        cpu.Reg.BC(0x1234);
+        cpu.Reg.BC = 0x1234;
         prepIns(Instruction.LD_pBC_A);
         cpu.Execute();
         expect(cpu.Mem.ReadByte(0x1234)).toBe(0xAB);
@@ -42,10 +42,10 @@ describe('testing CPU', () => {
 
     test('INC_BC', () => {
         cpu.Reg.Reset();
-        cpu.Reg.BC(0x1234);
+        cpu.Reg.BC = 0x1234;
         prepIns(Instruction.INC_BC);
         cpu.Execute();
-        expect(cpu.Reg.BC()).toBe(0x1235);
+        expect(cpu.Reg.BC).toBe(0x1235);
     });
 
     test('INC_B', () => {
@@ -139,31 +139,31 @@ describe('testing CPU', () => {
 
     test('ADD_HL_BC', () => {
         cpu.Reg.Reset();
-        cpu.Reg.HL(0x000F);
-        cpu.Reg.BC(0x000F);
+        cpu.Reg.HL = 0x000F;
+        cpu.Reg.BC = 0x000F;
         prepIns(Instruction.ADD_HL_BC);
         cpu.Execute();
-        expect(cpu.Reg.HL()).toBe(0x001E);
+        expect(cpu.Reg.HL).toBe(0x001E);
         expect(cpu.Flags.N).toBe(false);
         expect(cpu.Flags.H).toBe(false);
         expect(cpu.Flags.C).toBe(false);
 
         cpu.Reg.Reset();
-        cpu.Reg.HL(0x0800);
-        cpu.Reg.BC(0x0800);
+        cpu.Reg.HL = 0x0800;
+        cpu.Reg.BC = 0x0800;
         prepIns(Instruction.ADD_HL_BC);
         cpu.Execute();
-        expect(cpu.Reg.HL()).toBe(0x1000);
+        expect(cpu.Reg.HL).toBe(0x1000);
         expect(cpu.Flags.N).toBe(false);
         expect(cpu.Flags.H).toBe(true);
         expect(cpu.Flags.C).toBe(false);
 
         cpu.Reg.Reset();
-        cpu.Reg.HL(0x8000);
-        cpu.Reg.BC(0x8000);
+        cpu.Reg.HL = 0x8000;
+        cpu.Reg.BC = 0x8000;
         prepIns(Instruction.ADD_HL_BC);
         cpu.Execute();
-        expect(cpu.Reg.HL()).toBe(0x0000);
+        expect(cpu.Reg.HL).toBe(0x0000);
         expect(cpu.Flags.N).toBe(false);
         expect(cpu.Flags.H).toBe(false);
         expect(cpu.Flags.C).toBe(true);
@@ -171,7 +171,7 @@ describe('testing CPU', () => {
 
     test('LD_A_pBC', () => {
         cpu.Reg.Reset();
-        cpu.Reg.BC(0x1234);
+        cpu.Reg.BC = 0x1234;
         cpu.Mem.WriteByte(0x1234, 0xAB);
         prepIns(Instruction.LD_A_pBC);
         cpu.Execute();
@@ -180,10 +180,10 @@ describe('testing CPU', () => {
 
     test('DEC_BC', () => {
         cpu.Reg.Reset();
-        cpu.Reg.BC(0x1234);
+        cpu.Reg.BC = 0x1234;
         prepIns(Instruction.DEC_BC);
         cpu.Execute();
-        expect(cpu.Reg.BC()).toBe(0x1233);
+        expect(cpu.Reg.BC).toBe(0x1233);
     });
 
     test('INC_C', () => {

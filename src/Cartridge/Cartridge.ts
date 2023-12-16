@@ -17,6 +17,7 @@ class Cartridge {
     this.size = bytes.byteLength;
 
     // Store ROM bytes
+    this.data = [];
     for (let i = 0; i < bytes.byteLength; i++) {
       this.data[i] = bytes.at(i);
     }

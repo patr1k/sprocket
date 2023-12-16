@@ -16,6 +16,7 @@ class CPU {
     Ticks: number;
     Ins: Byte;
     InsEx: Byte;
+    Timer: NodeJS.Timeout;
 
     constructor(mem: Memory) {
         this.Mem = mem;
@@ -25,7 +26,15 @@ class CPU {
     }
 
     Start() {
+        this.Timer = setInterval(() => this.Execute(), 500);
+    }
 
+    Pause() {
+        clearInterval(this.Timer);
+    }
+
+    Step() {
+        this.Execute();
     }
 
     FetchOp() {
@@ -48,6 +57,8 @@ class CPU {
 
     Execute() {
         this.FetchOp();
+
+        console.log(`Ins: ${this.Ins.toString(16)}  PC: ${this.Reg.PC.toString(16)}`)
 
         switch (this.Ins) {
             case 0x00: /** no op */ break;

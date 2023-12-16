@@ -6,7 +6,7 @@ import RamBank from "./RamBank";
 import BankRegisters from "./BankRegisters";
 import RamSize from "../Cartridge/RamSize";
 import IO from "./IO";
-import MbcMode from "./MBCMode";
+import MbcMode from "./MbcMode";
 
 class Memory {
     private cart: Cartridge;
@@ -219,7 +219,7 @@ class Memory {
             case (addr < 0xC000): // 0xA000 - 0xBFFF
                 // Switchable External RAM
                 if (0 === this.bank_reg.Bank_Mode) {
-                    this.xram.ReadByte(addr & 0x1FFF);
+                    return this.xram.ReadByte(addr & 0x1FFF);
                 } else {
                     return this.xram.ReadByte((this.bank_reg.RAM_Bank_Num << 13) | (addr & 0x1FFF));
                 }

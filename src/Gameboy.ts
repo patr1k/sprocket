@@ -35,6 +35,18 @@ class Gameboy {
         this.PPU = new PPU(this.CPU, this.Mem, this.Ctx, config.zoom || 1);
     }
 
+    Pause() {
+        this.CPU.Pause();
+    }
+
+    Resume() {
+        this.CPU.Start();
+    }
+
+    Step() {
+        this.CPU.Step();
+    }
+
     async StartRom(romFile: File) {
         const buffer = await romFile.arrayBuffer();
 

@@ -7,12 +7,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="module" src="./dist/sprocket.js"></script>
 </head>
 
 <body>
-    <input type="file" id="romFile" accept=".gb,.gbc" />
     <canvas id="screen"></canvas>
-    <script type="module" src="./dist/sprocket.js"></script>
+    <div>
+        <input type="file" id="romFile" accept=".gb,.gbc" /><br /><br />
+        <button type="button" id="btnPause" disabled>Pause</button>
+        <button type="button" id="btnStep" disabled>Step</button>
+    </div>
 </body>
 
 </html>
