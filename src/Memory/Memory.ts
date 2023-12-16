@@ -7,6 +7,7 @@ import BankRegisters from "./BankRegisters";
 import RamSize from "../Cartridge/RamSize";
 import IO from "./IO";
 import MbcMode from "./MbcMode";
+import IRQ from "../CPU/IRQ";
 
 class Memory {
     private cart: Cartridge;
@@ -19,6 +20,9 @@ class Memory {
 
     /** External RAM */
     private xram: RamBank;
+
+    /** High RAM */
+    private hram: RamBank;
 
     /** I/O Memory */
     private io: RamBank;
@@ -71,12 +75,15 @@ class Memory {
         ];
 
         this.io = new IO();
+
+        this.hram = new RamBank(0x7F);
     }
 
     Reset() {
         this.wram.forEach(r => r.Reset());
         this.vram.forEach(r => r.Reset());
         this.io.Reset();
+        this.hram.Reset();
         this.cart = null;
         this.mbc = null;
     }
@@ -173,10 +180,12 @@ class Memory {
 
             case (addr < 0xFF80): // 0xFF00 - 0xFF7F
                 // I/O
+                this.io.WriteByte(addr - 0xFF00, byte);
                 break;
 
             case (addr < 0xFFFF): // 0xFF80 - 0xFFFE
                 // High RAM
+                this.hram.WriteByte(addr - 0xFF80, byte);
                 break;
 
             case (addr === 0xFFFF): // 0xFFFF

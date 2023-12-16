@@ -1,4 +1,5 @@
 import Clock from "../Clock";
+import IRQ from "./IRQ";
 import Memory from "../Memory/Memory";
 import { Byte, Word } from "../Utils";
 import CPU_ALU from "./CPU_ALU";
@@ -196,6 +197,10 @@ class CPU {
             case 0x7E: CPU_BIT.BIT_7_pHL(this); break;
             case 0x7F: CPU_BIT.BIT_7_A(this); break;
         }
+    }
+
+    Interrupt(irq: IRQ) {
+        // TODO: Implement interrupt
     }
 }
 
