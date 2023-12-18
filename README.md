@@ -12,6 +12,14 @@ web-based projects I have in mind.
 
 *So here goes nothing!...*
 
+## Milestone
+
+- [X] Run Boot ROM
+- [ ] Successful startup and logo screen
+- [ ] Run Custom Test ROMs
+- [ ] Run Tetris
+- [ ] Run Pokemon Red
+
 ## Licese
 
 MIT License (see [LICENSE](https://github.com/patr1k/sprocket/blob/main/LICENSE) file)
