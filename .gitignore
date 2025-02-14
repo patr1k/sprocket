@@ -1,0 +1,5 @@
+.vscode/
+*.o
+*.wasm
+*.js
+.DS_Store
