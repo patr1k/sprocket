@@ -1,21 +1,23 @@
-CC=emcc
-CCFLAGS=-I./include
+WASM_OBJECTS = main.wasm.o mem.wasm.o cpu.wasm.o cpu_0.wasm.o
+C_OBJECTS = main.o mem.o cpu.o cpu_0.o
+CC=gcc
+WASM=emcc
+CFLAGS=-I./include
 
-all: main.o mem.o cpu.o cpu_0.o
-	$(CC) -o gbjs.js main.o mem.o cpu.o cpu_0.o -WASM=1
+all: exe wasm
 
-main.o: src/main.c
-	$(CC) $(CCFLAGS) -g -c src/main.c
+exe: $(C_OBJECTS)
+	$(CC) -o gbjs $(C_OBJECTS)
 
-mem.o: src/mem.c
-	$(CC) $(CCFLAGS) -g -c src/mem.c
+wasm: $(WASM_OBJECTS)
+	$(WASM) -o gbjs.js $(WASM_OBJECTS) -WASM=1
 
-cpu.o: src/cpu.c
-	$(CC) $(CCFLAGS) -g -c src/cpu.c
+%.wasm.o: src/%.c
+	$(WASM) $(CFLAGS) -g -c $< -o $@
 
-cpu_0.o: src/cpu_0.c
-	$(CC) $(CCFLAGS) -g -c src/cpu_0.c
+%.o: src/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm -rf *.js *.wasm *.o
+	rm -rf *.js *.wasm *.o gbjs

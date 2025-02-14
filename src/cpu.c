@@ -1,34 +1,53 @@
 #include "cpu.h"
 
-void cpu_set_flag(struct cpu_state *cpu, enum cpu_flag flag, bool value)
-{
-    if (value)
-        cpu->AF.byte.F |= flag;
-    else
-        cpu->AF.byte.F &= ~flag;
-}
-
-bool cpu_get_flag(struct cpu_state *cpu, enum cpu_flag flag)
-{
-    return (cpu->AF.byte.F & flag) > 0;
-}
-
-uint16_t* cpu_ptr_r16(struct cpu_state *cpu, enum cpu_reg_r16 r16)
+uint16_t* cpu_r16_ptr(struct gbc* dev, enum cpu_reg_r16 r16)
 {
     switch (r16)
     {
-        case R16_BC: return &cpu->BC.value; break;
-        case R16_DE: return &cpu->DE.value; break;
-        case R16_HL: return &cpu->HL.value; break;
-        case R16_SP: return &cpu->SP; break;
+        case R16_BC: return &dev->cpu.BC.val; break;
+        case R16_DE: return &dev->cpu.DE.val; break;
+        case R16_HL: return &dev->cpu.HL.val; break;
+        case R16_SP: return &dev->cpu.SP; break;
     }
 }
 
-uint8_t* cpu_ptr_r8(struct cpu_state *cpu, enum cpu_reg_r8 r8)
+uint8_t* cpu_r8_ptr(struct gbc* dev, enum cpu_reg_r8 r8)
 {
     switch (r8)
     {
-        case R8_A: return &cpu->AF.byte.A;
-        default: return 0;
+        case R8_B: return &dev->cpu.BC.byte.B;
+        case R8_C: return &dev->cpu.BC.byte.C;
+        case R8_D: return &dev->cpu.DE.byte.D;
+        case R8_E: return &dev->cpu.DE.byte.E;
+        case R8_H: return &dev->cpu.HL.byte.H;
+        case R8_L: return &dev->cpu.HL.byte.L;
+        case R8_HL: return &dev->mem[dev->cpu.HL.val];
+        case R8_A: return &dev->cpu.AF.byte.A;
+    }
+}
+
+uint16_t cpu_r16_val(struct gbc* dev, enum cpu_reg_r16 r16)
+{
+    switch (r16)
+    {
+        case R16_BC: return dev->cpu.BC.val;
+        case R16_DE: return dev->cpu.DE.val;
+        case R16_HL: return dev->cpu.HL.val;
+        case R16_SP: return dev->cpu.SP;
+    }
+}
+
+uint8_t cpu_r8_val(struct gbc* dev, enum cpu_reg_r8 r8)
+{
+    switch (r8)
+    {
+        case R8_B: return dev->cpu.BC.byte.B;
+        case R8_C: return dev->cpu.BC.byte.C;
+        case R8_D: return dev->cpu.DE.byte.D;
+        case R8_E: return dev->cpu.DE.byte.E;
+        case R8_H: return dev->cpu.HL.byte.H;
+        case R8_L: return dev->cpu.HL.byte.L;
+        case R8_HL: return dev->mem[dev->cpu.HL.val];
+        case R8_A: return dev->cpu.AF.byte.A;
     }
 }

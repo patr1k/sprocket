@@ -5,10 +5,10 @@
 
 enum cpu_flag
 {
-    FLAG_ZERO = 1,
-    FLAG_SUBTRACT = 2,
-    FLAG_HALF_CARRY = 4,
-    FLAG_CARRY = 8
+    FLAG_ZERO = 0x80,
+    FLAG_SUBTRACT = 0x40,
+    FLAG_HALF_CARRY = 0x20,
+    FLAG_CARRY = 0x10
 };
 
 enum cpu_flag_cond
@@ -46,35 +46,48 @@ struct cpu_state
             uint8_t F;
             uint8_t A;
         } byte;
-        uint16_t value;
+        struct {
+            uint8_t : 4;
+            uint8_t C : 1;
+            uint8_t H : 1;
+            uint8_t N : 1;
+            uint8_t Z : 1;
+            uint8_t : 8;
+        } flag;
+        uint16_t val;
     } AF;
     union {
         struct {
             uint8_t C;
             uint8_t B;
         } byte;
-        uint16_t value;
+        uint16_t val;
     } BC;
     union {
         struct {
             uint8_t E;
             uint8_t D;
         } byte;
-        uint16_t value;
+        uint16_t val;
     } DE;
     union {
         struct {
             uint8_t L;
             uint8_t H;
         } byte;
-        uint16_t value;
+        uint16_t val;
     } HL;
     uint16_t SP;
     uint16_t PC;
 };
 
-void cpu_set_flag(struct cpu_state *cpu, enum cpu_flag flag, bool value);
-bool cpu_get_flag(struct cpu_state *cpu, enum cpu_flag flag);
+struct gbc
+{
+    struct cpu_state cpu;
+    uint8_t* mem;
+};
 
-uint16_t* cpu_ptr_r16(struct cpu_state *cpu, enum cpu_reg_r16 r16);
-uint8_t* cpu_ptr_r8(struct cpu_state *cpu, enum cpu_reg_r8 r8);
+uint16_t* cpu_r16_ptr(struct gbc* dev, enum cpu_reg_r16 r16);
+uint8_t* cpu_r8_ptr(struct gbc* dev, enum cpu_reg_r8 r8);
+uint16_t cpu_r16_val(struct gbc* dev, enum cpu_reg_r16 r16);
+uint8_t cpu_r8_val(struct gbc* dev, enum cpu_reg_r8 r8);

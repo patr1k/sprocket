@@ -2,20 +2,19 @@
 
 #include <stdint.h>
 
-#define ARG_MEM uint8_t*
 #define ARG_R8 enum cpu_reg_r8
 #define ARG_R16 enum cpu_reg_r16
 #define ARG_IMM8 uint8_t
 #define ARG_IMM16 uint16_t
 #define ARG_COND enum cpu_flag_cond
-#define DEF_INSTR(instr, ...) void cpu_##instr(struct cpu_state* __VA_OPT__(,) __VA_ARGS__);
+#define DEF_INSTR(instr, ...) void cpu_##instr(struct gbc* __VA_OPT__(,) __VA_ARGS__);
 
 // Block 0 Instructions
 DEF_INSTR(nop)
 DEF_INSTR(ld_r16_imm16, ARG_R16, ARG_IMM16)
-DEF_INSTR(ld_r16mem_a, ARG_MEM, ARG_R16)
-DEF_INSTR(ld_a_r16mem, ARG_MEM, ARG_R16)
-DEF_INSTR(ld_imm16_sp, ARG_MEM, ARG_IMM16)
+DEF_INSTR(ld_r16mem_a, ARG_R16)
+DEF_INSTR(ld_a_r16mem, ARG_R16)
+DEF_INSTR(ld_imm16_sp, ARG_IMM16)
 DEF_INSTR(inc_r16, ARG_R16)
 DEF_INSTR(dec_r16, ARG_R16)
 DEF_INSTR(add_hl_r16, ARG_R16)
