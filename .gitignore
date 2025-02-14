@@ -3,3 +3,4 @@
 *.wasm
 *.js
 .DS_Store
+/gbjs
