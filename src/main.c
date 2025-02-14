@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define ENABLE_DECOMP
 #include "cpu.h"
 #include "cpu_instr_set.h"
 #include "mem.h"
@@ -10,18 +11,6 @@ int main()
     struct gbc gameboy = {};
     gameboy.mem = mem_create();
 
-    gameboy.cpu.AF.byte.A = 0;
-    gameboy.cpu.AF.flag.C = 1;
-    gameboy.cpu.AF.flag.N = 1;
-
-    printf("The current flags are: 0x%x%x\n", (gameboy.cpu.AF.byte.F & 0xF0) >> 4, gameboy.cpu.AF.byte.F & 0x0F);
-    printf("Flag Z: %u\n", gameboy.cpu.AF.flag.Z);
-    printf("Flag N: %u\n", gameboy.cpu.AF.flag.N);
-    printf("Flag H: %u\n", gameboy.cpu.AF.flag.H);
-    printf("Flag C: %u\n", gameboy.cpu.AF.flag.C);
-    printf("A: 0x%x\n", gameboy.cpu.AF.byte.A);
-    printf("F: 0x%x\n", gameboy.cpu.AF.byte.F);
-    printf("AF: 0x%x\n", gameboy.cpu.AF.val);
     
     gameboy.cpu.HL.byte.H = 0x3c;
     gameboy.cpu.HL.byte.L = 0xbf;
@@ -38,6 +27,16 @@ int main()
     cpu_ld_a_r16mem(&gameboy, R16_DE);
 
     printf("The value of A is %u \n", gameboy.cpu.AF.byte.A);
+
+    uint8_t daa_num = 0xB5;
+    cpu_ld_r8_imm8(&gameboy, R8_A, daa_num);
+    cpu_daa(&gameboy);
+    printf("The daa value of 0x%x is 0x%x \n", daa_num, gameboy.cpu.AF.byte.A);
+    printf("C = %u\n", gameboy.cpu.AF.flag.C);
+
+    uint8_t test = 0x8F;
+    int8_t test2 = test;
+    printf("The unsigned is %u and the signed is %i\n", test, test2);
 
     mem_destroy(gameboy.mem);
 
