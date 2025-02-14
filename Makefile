@@ -1,5 +1,5 @@
-WASM_OBJECTS = main.wasm.o mem.wasm.o cpu.wasm.o cpu_0.wasm.o
-C_OBJECTS = main.o mem.o cpu.o cpu_0.o
+WASM_OBJECTS = main.wasm.o mem.wasm.o cpu.wasm.o cpu_0.wasm.o cpu_1.wasm.o
+C_OBJECTS = main.o mem.o cpu.o cpu_0.o cpu_1.o
 CC=gcc
 WASM=emcc
 CFLAGS=-I./include
