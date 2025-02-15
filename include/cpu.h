@@ -105,8 +105,20 @@ struct cpu_state
         } byte;
         uint16_t val;
     } HL;
-    uint16_t SP;
-    uint16_t PC;
+    union {
+        struct {
+            uint8_t L;
+            uint8_t H;
+        } byte;
+        uint16_t val;
+    } SP;
+    union {
+        struct {
+            uint8_t L;
+            uint8_t H;
+        } byte;
+        uint16_t val;
+    } PC;
 };
 
 struct gbc
@@ -119,3 +131,5 @@ uint16_t* cpu_r16_ptr(struct gbc* dev, enum cpu_reg_r16 r16);
 uint8_t* cpu_r8_ptr(struct gbc* dev, enum cpu_reg_r8 r8);
 uint16_t cpu_r16_val(struct gbc* dev, enum cpu_reg_r16 r16);
 uint8_t cpu_r8_val(struct gbc* dev, enum cpu_reg_r8 r8);
+uint8_t cpu_fetch_byte(struct gbc* dev);
+uint16_t cpu_fetch_word(struct gbc* dev);

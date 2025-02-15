@@ -1,7 +1,5 @@
 /**
  * CPU Block 0 Instructions
- * 
- * @author patrik <patr1k@cyntacs.com>
  */
 
 #include "cpu.h"
@@ -30,9 +28,9 @@ void cpu_ld_a_r16mem(struct gbc* dev, enum cpu_reg_r16 r16mem)
     dev->cpu.AF.byte.A = dev->mem[cpu_r16_val(dev, r16mem)];
 }
 
-void cpu_ld_imm16_sp(struct gbc* dev, uint16_t imm16)
+void cpu_ld_imm16mem_sp(struct gbc* dev, uint16_t imm16)
 {
-    DECOMP("LD 0x%x, SP", imm16)
+    DECOMP("LD [0x%x], SP", imm16)
     dev->mem[imm16] = dev->cpu.SP;
 }
 
@@ -77,6 +75,7 @@ void cpu_rlca(struct gbc* dev)
     DECOMP("RLCA")
     const uint8_t carry = dev->cpu.AF.byte.A & 0x80 ? 1 : 0;
     dev->cpu.AF.byte.A = ((dev->cpu.AF.byte.A << 1) & 0xFF) | carry;
+
     dev->cpu.AF.byte.F = 0;
     dev->cpu.AF.flag.C = carry;
 }
@@ -86,6 +85,7 @@ void cpu_rrca(struct gbc* dev)
     DECOMP("RRCA")
     const uint8_t carry = dev->cpu.AF.byte.A & 0x01;
     dev->cpu.AF.byte.A = ((dev->cpu.AF.byte.A >> 1) & 0xFF) | (carry ? 0x80 : 0);
+
     dev->cpu.AF.byte.F = 0;
     dev->cpu.AF.flag.C = carry;
 }
@@ -95,6 +95,7 @@ void cpu_rla(struct gbc* dev)
     DECOMP("RLA")
     const uint8_t carry = dev->cpu.AF.byte.A & 0x80 ? 1 : 0;
     dev->cpu.AF.byte.A = ((dev->cpu.AF.byte.A << 1) & 0xFF) | dev->cpu.AF.flag.C;
+
     dev->cpu.AF.byte.F = 0;
     dev->cpu.AF.flag.C = carry;
 }
@@ -104,6 +105,7 @@ void cpu_rra(struct gbc* dev)
     DECOMP("RRA")
     const uint8_t carry = dev->cpu.AF.byte.A & 0x01;
     dev->cpu.AF.byte.A = ((dev->cpu.AF.byte.A >> 1) & 0xFF) | (dev->cpu.AF.flag.C ? 0x80 : 0);
+
     dev->cpu.AF.byte.F = 0;
     dev->cpu.AF.flag.C = carry;
 }
@@ -153,6 +155,7 @@ void cpu_cpl(struct gbc* dev)
 {
     DECOMP("CPL")
     dev->cpu.AF.byte.A = ~dev->cpu.AF.byte.A;
+
     dev->cpu.AF.flag.H = 1;
     dev->cpu.AF.flag.N = 1;
 }
@@ -160,6 +163,7 @@ void cpu_cpl(struct gbc* dev)
 void cpu_scf(struct gbc* dev)
 {
     DECOMP("SCF")
+
     dev->cpu.AF.flag.C = 1;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.N = 0;
@@ -168,6 +172,7 @@ void cpu_scf(struct gbc* dev)
 void cpu_ccf(struct gbc* dev)
 {
     DECOMP("CCF")
+    
     dev->cpu.AF.flag.C = dev->cpu.AF.flag.C ? 0 : 1;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.N = 0;
