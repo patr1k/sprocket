@@ -62,7 +62,7 @@ CPU_INSTR(ld_HLi_A)
 CPU_INSTR(ld_HLd_A)
 {
     DECOMP("LD [HL-], A")
-    dev->mem[dev->cpu.HL.val++] = dev->cpu.AF.byte.A;
+    dev->mem[dev->cpu.HL.val--] = dev->cpu.AF.byte.A;
 }
 
 CPU_INSTR(ld_A_BCmem)
