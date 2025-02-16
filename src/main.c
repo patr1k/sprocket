@@ -2,11 +2,12 @@
 #include <stdlib.h>
 
 #define DECOMP_ON 1
-#include "cpu.h"
-#include "cpu_instr_set.h"
+#include "isa.h"
 #include "mem.h"
 
 #include "boot_rom.h"
+
+extern 
 
 int main()
 {
@@ -17,7 +18,13 @@ int main()
     bool running = true;
     while (running)
     {
-        cpu_exe(&gameboy);
+        const instr = cpu_fetch_byte(&gameboy);
+        if (instr == 0xCB) {
+            isa[instr](&gameboy);
+        } else {
+            isa_cb[instr](&gameboy);
+        }
+        
         if (gameboy.cpu.BC.byte.B == 0x66) running = false;
     }
 

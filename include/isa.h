@@ -22,6 +22,9 @@
 #define DECOMP(...)
 #endif
 
+void (*isa[0xFF])(struct gbc *);
+void (*isa_cb[0xFF])(struct gbc *);
+
 /**
  * Block 0 Instructions
  */

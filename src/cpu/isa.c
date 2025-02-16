@@ -145,13 +145,15 @@ void (*isa[0xFF])(struct gbc *) = {
     /* 0x85 */ cpu_add_A_L,
     /* 0x86 */ cpu_add_A_HLmem,
     /* 0x87 */ cpu_add_A_A,
-    /* 0x78 */ cpu_adc_A_B,
-    /* 0x79 */ cpu_adc_A_C,
-    /* 0x7A */ cpu_adc_A_D,
-    /* 0x7B */ cpu_adc_A_E,
-    /* 0x7C */ cpu_adc_A_H,
-    /* 0x7D */ cpu_adc_A_L,
-    /* 0x7E */ cpu_adc_A_HLmem,
-    /* 0x7F */ cpu_adc_A_A,
+    /* 0x88 */ cpu_adc_A_B,
+    /* 0x89 */ cpu_adc_A_C,
+    /* 0x8A */ cpu_adc_A_D,
+    /* 0x8B */ cpu_adc_A_E,
+    /* 0x8C */ cpu_adc_A_H,
+    /* 0x8D */ cpu_adc_A_L,
+    /* 0x8E */ cpu_adc_A_HLmem,
+    /* 0x8F */ cpu_adc_A_A,
 
 };
+
+void (*isa_cb[0xFF])(struct gbc *) = {};
