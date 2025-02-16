@@ -7,8 +7,6 @@
 
 #include "boot_rom.h"
 
-extern 
-
 int main()
 {
     struct gbc gameboy = {};
