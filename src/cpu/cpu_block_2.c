@@ -2,7 +2,7 @@
  * CPU Block 2 Instructions
  */
 
-#include "isa.h"
+#include "cpu_isa.h"
 
 #define ADD_A_R8(r8src, r16src) CPU_INSTR(add_A_##r8src) \
     { \

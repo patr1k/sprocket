@@ -2,7 +2,7 @@
  * CPU Block 0 Instructions
  */
 
-#include "isa.h"
+#include "cpu_isa.h"
 
 CPU_INSTR(nop)
 {

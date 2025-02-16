@@ -2,7 +2,7 @@
  * CPU Block 1 Instructions
  */
 
-#include "isa.h"
+#include "cpu_isa.h"
 
 CPU_INSTR(halt)
 {

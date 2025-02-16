@@ -39,34 +39,6 @@ enum cpu_reg_r16
     R16_SP  = 3,
 };
 
-#define FLAG_NAME(n) \
-    ((n) == 0x80 ? "Z" : \
-     (n) == 0x40 ? "N" : \
-     (n) == 0x20 ? "H" : \
-     (n) == 0x10 ? "C" : "")
-
-#define COND_NAME(n) \
-    ((n) == 0 ? "NZ" : \
-     (n) == 1 ? "Z" : \
-     (n) == 2 ? "NC" : \
-     (n) == 3 ? "C" : "")
-
-#define R8_NAME(n) \
-    ((n) == 0 ? "B" : \
-     (n) == 1 ? "C" : \
-     (n) == 2 ? "D" : \
-     (n) == 3 ? "E" : \
-     (n) == 4 ? "H" : \
-     (n) == 5 ? "L" : \
-     (n) == 6 ? "[HL]" : \
-     (n) == 7 ? "A" : "")
-
-#define R16_NAME(n) \
-    ((n) == 0 ? "BC" : \
-     (n) == 1 ? "DE" : \
-     (n) == 2 ? "HL" : \
-     (n) == 3 ? "SP" : "")
-
 struct cpu_state
 {
     union {
@@ -127,9 +99,22 @@ struct gbc
     uint8_t* mem;
 };
 
-uint16_t* cpu_r16_ptr(struct gbc* dev, enum cpu_reg_r16 r16);
-uint8_t* cpu_r8_ptr(struct gbc* dev, enum cpu_reg_r8 r8);
-uint16_t cpu_r16_val(struct gbc* dev, enum cpu_reg_r16 r16);
-uint8_t cpu_r8_val(struct gbc* dev, enum cpu_reg_r8 r8);
-uint8_t cpu_fetch_byte(struct gbc* dev);
-uint16_t cpu_fetch_word(struct gbc* dev);
+#define FETCH_BYTE() (dev->mem[dev->cpu.PC.val++])
+#define FETCH_WORD() (dev->mem[dev->cpu.PC.val++] | (dev->mem[dev->cpu.PC.val++] << 8))
+
+#define STACK_PUSH(byte) dev->mem[dev->cpu.SP.val++] = byte
+#define STACK_POP() --dev->cpu.SP.val
+
+#define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
+
+#define DECOMP_ON 1
+// Decompilation logging
+#ifdef DECOMP_ON
+#include <stdio.h>
+#define DECOMP(str, ...) printf(str "\n" __VA_OPT__(,) __VA_ARGS__);
+#else
+#define DECOMP(...)
+#endif
+
+void (*cpu_isa[0xFF])(struct gbc *);
+void (*cpu_isa_cb[0xFF])(struct gbc *);

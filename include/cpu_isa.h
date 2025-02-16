@@ -1,29 +1,7 @@
 #pragma once
 
-#include <stdlib.h>
-#include <memory.h>
-
 #include "cpu.h"
-
-#define FETCH_BYTE() (dev->mem[dev->cpu.PC.val++])
-#define FETCH_WORD() (dev->mem[dev->cpu.PC.val++] | (dev->mem[dev->cpu.PC.val++] << 8))
-
-#define STACK_PUSH(byte) dev->mem[dev->cpu.SP.val++] = byte
-#define STACK_POP() --dev->cpu.SP.val
-
-#define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
-
-#define DECOMP_ON 1
-// Decompilation logging
-#ifdef DECOMP_ON
-#include <stdio.h>
-#define DECOMP(str, ...) printf(str "\n" __VA_OPT__(,) __VA_ARGS__);
-#else
-#define DECOMP(...)
-#endif
-
-void (*isa[0xFF])(struct gbc *);
-void (*isa_cb[0xFF])(struct gbc *);
+#include <stdint.h>
 
 /**
  * Block 0 Instructions

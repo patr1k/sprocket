@@ -1,6 +1,6 @@
-#include "isa.h"
+#include "cpu_isa.h"
 
-void (*isa[0xFF])(struct gbc *) = {
+void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0x00 */ cpu_nop,
     /* 0x01 */ cpu_ld_BC_d16,
     /* 0x02 */ cpu_ld_BCmem_A,
@@ -156,4 +156,4 @@ void (*isa[0xFF])(struct gbc *) = {
 
 };
 
-void (*isa_cb[0xFF])(struct gbc *) = {};
+void (*cpu_isa_cb[0xFF])(struct gbc *) = {};
