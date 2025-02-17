@@ -123,6 +123,8 @@ struct gbc
 #define POP_BYTE() dev->mem[--dev->cpu.SP.val]
 #define POP_WORD() (dev->mem[--dev->cpu.SP.val] << 8) | dev->mem[--dev->cpu.SP.val]
 
+#define HLMEM dev->mem[dev->cpu.HL.val]
+
 #define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
 
 #define DECOMP_ON 1

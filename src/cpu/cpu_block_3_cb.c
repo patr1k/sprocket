@@ -4,8 +4,6 @@
 
 #include "cpu_isa.h"
 
-#define HLMEM dev->mem[dev->cpu.HL.val]
-
 #define BIT_U3_R8(bit, r8, r16) CPU_INSTR(bit_##bit##_##r8) \
     { \
         DECOMP("BIT " #bit ", " #r8) \

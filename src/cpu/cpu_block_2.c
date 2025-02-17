@@ -118,7 +118,7 @@ ADD_A_R8(A, AF)
 CPU_INSTR(add_A_HLmem)
 { 
     DECOMP("ADD A, [HL]") 
-    uint8_t reg = dev->mem[dev->cpu.HL.val]; 
+    uint8_t reg = HLMEM; 
     uint16_t result16 = dev->cpu.AF.byte.A + reg; 
     uint8_t result8 = result16 & 0xFF; 
     uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; 
@@ -140,7 +140,7 @@ ADC_A_R8(A, AF)
 CPU_INSTR(adc_A_HLmem)
 { 
     DECOMP("ADD A, [HL]") 
-    uint8_t reg = dev->mem[dev->cpu.HL.val]; 
+    uint8_t reg = HLMEM; 
     uint16_t result16 = dev->cpu.AF.byte.A + reg + dev->cpu.AF.flag.C; 
     uint8_t result8 = result16 & 0xFF; 
     uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; 
@@ -162,7 +162,7 @@ SUB_A_R8(A, AF)
 CPU_INSTR(sub_A_HLmem)
 { 
     DECOMP("SUB A, [HL]") 
-    uint8_t reg = dev->mem[dev->cpu.HL.val]; 
+    uint8_t reg = HLMEM; 
     uint16_t result16 = dev->cpu.AF.byte.A - reg; 
     uint8_t result8 = result16 & 0xFF; 
     uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; 
@@ -184,7 +184,7 @@ SBC_A_R8(A, AF)
 CPU_INSTR(sbc_A_HLmem)
 { 
     DECOMP("SBC A, [HL]") 
-    uint8_t reg = dev->mem[dev->cpu.HL.val]; 
+    uint8_t reg = HLMEM; 
     uint16_t result16 = dev->cpu.AF.byte.A - reg - dev->cpu.AF.flag.C; 
     uint8_t result8 = result16 & 0xFF; 
     uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; 
@@ -207,7 +207,7 @@ AND_A_R8(A, AF)
 CPU_INSTR(and_A_HLmem)
 {
     DECOMP("AND A, [HL]")
-    dev->cpu.AF.byte.A &= dev->mem[dev->cpu.HL.val];
+    dev->cpu.AF.byte.A &= HLMEM;
 
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.C = 0;
@@ -226,7 +226,7 @@ XOR_A_R8(A, AF)
 CPU_INSTR(xor_A_HLmem)
 {
     DECOMP("XOR A, [HL]")
-    dev->cpu.AF.byte.A ^= dev->mem[dev->cpu.HL.val];
+    dev->cpu.AF.byte.A ^= HLMEM;
 
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.C = 0;
@@ -245,7 +245,7 @@ OR_A_R8(A, AF)
 CPU_INSTR(or_A_HLmem)
 {
     DECOMP("OR A, [HL]")
-    dev->cpu.AF.byte.A |= dev->mem[dev->cpu.HL.val];
+    dev->cpu.AF.byte.A |= HLMEM;
 
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.C = 0;
@@ -265,7 +265,7 @@ CPU_INSTR(cp_A_HLmem)
 {
     DECOMP("CP A, [HL]")
 
-    uint8_t reg = dev->mem[dev->cpu.HL.val];
+    uint8_t reg = HLMEM;
     uint16_t result16 = dev->cpu.AF.byte.A - reg;
     uint8_t result8 = result16;
     uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0;
