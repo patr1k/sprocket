@@ -91,6 +91,7 @@ struct cpu_state
         } byte;
         uint16_t val;
     } PC;
+    bool IME;
 };
 
 struct gbc
@@ -102,8 +103,10 @@ struct gbc
 #define FETCH_BYTE() (dev->mem[dev->cpu.PC.val++])
 #define FETCH_WORD() (dev->mem[dev->cpu.PC.val++] | (dev->mem[dev->cpu.PC.val++] << 8))
 
-#define STACK_PUSH(byte) dev->mem[dev->cpu.SP.val++] = byte
-#define STACK_POP() --dev->cpu.SP.val
+#define PUSH_BYTE(byte) dev->mem[dev->cpu.SP.val++] = byte
+#define PUSH_WORD(word) dev->mem[dev->cpu.SP.val++] = word & 0xFF; dev->mem[dev->cpu.SP.val++] = word >> 8
+#define POP_BYTE() dev->mem[--dev->cpu.SP.val]
+#define POP_WORD() (dev->mem[--dev->cpu.SP.val] << 8) | dev->mem[--dev->cpu.SP.val]
 
 #define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
 
