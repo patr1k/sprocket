@@ -136,5 +136,3 @@ struct gbc
 
 void (*cpu_isa[0xFF])(struct gbc *);
 void (*cpu_isa_cb[0xFF])(struct gbc *);
-
-void cpu_hard_lock(struct gbc *dev);

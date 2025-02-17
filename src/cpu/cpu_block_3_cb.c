@@ -4,7 +4,9 @@
 
 #include "cpu_isa.h"
 
-#define BIT_U3_R8(bit, r8, r16) CPU_INSTR(bit_##bit_##r8) \
+#define HLMEM dev->mem[dev->cpu.HL.val]
+
+#define BIT_U3_R8(bit, r8, r16) CPU_INSTR(bit_##bit##_##r8) \
     { \
         DECOMP("BIT " #bit ", " #r8) \
         dev->cpu.AF.flag.Z = (dev->cpu.BC.byte.B & (1 << 0)) == 0; \
@@ -12,10 +14,10 @@
         dev->cpu.AF.flag.H = 1; \
     }
 
-#define BIT_U3_HLMEM(bit) CPU_INSTR(bit_##bit_HLmem) \
+#define BIT_U3_HLMEM(bit) CPU_INSTR(bit_##bit##_HLmem) \
     { \
         DECOMP("BIT " #bit ", [HL]") \
-        dev->cpu.AF.flag.Z = (dev->mem[dev->cpu.HL.val] & (1 << 0)) == 0; \
+        dev->cpu.AF.flag.Z = (HLMEM & (1 << 0)) == 0; \
         dev->cpu.AF.flag.N = 0; \
         dev->cpu.AF.flag.H = 1; \
     }
@@ -114,10 +116,10 @@ CPU_INSTR(rlc_HLmem)
 {
     DECOMP("RLC [HL]")
 
-    uint8_t carry = (dev->mem[dev->cpu.HL.val] & 0x80) ? 1 : 0;
-    dev->mem[dev->cpu.HL.val] = (dev->mem[dev->cpu.HL.val] << 1) | carry;
+    uint8_t carry = (HLMEM & 0x80) ? 1 : 0;
+    HLMEM = (HLMEM << 1) | carry;
 
-    dev->cpu.AF.flag.Z = dev->mem[dev->cpu.HL.val] == 0;
+    dev->cpu.AF.flag.Z = HLMEM == 0;
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.C = carry;
@@ -126,7 +128,7 @@ CPU_INSTR(rlc_HLmem)
 #define RRC_R8(r8, r16) CPU_INSTR(rrc_##r8) \
     { \
         DECOMP("RLC " #r8) \
-        uint8_t carry = (dev->cpu.r16.byte.r8 & 0x01) ? 1 : 0; \
+        uint8_t carry = dev->cpu.r16.byte.r8 & 0x01; \
         dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 >> 1) | (carry ? 0x80 : 0); \
         dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
         dev->cpu.AF.flag.N = 0; \
@@ -145,10 +147,10 @@ CPU_INSTR(rrc_HLmem)
 {
     DECOMP("RRC [HL]")
 
-    uint8_t carry = (dev->mem[dev->cpu.HL.val] & 0x01) ? 1 : 0;
-    dev->mem[dev->cpu.HL.val] = (dev->mem[dev->cpu.HL.val] >> 1) | (carry ? 0x80 : 0);
+    uint8_t carry = HLMEM & 0x01;
+    HLMEM = (HLMEM >> 1) | (carry ? 0x80 : 0);
     
-    dev->cpu.AF.flag.Z = dev->mem[dev->cpu.HL.val] == 0;
+    dev->cpu.AF.flag.Z = HLMEM == 0;
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.C = carry;
@@ -176,10 +178,10 @@ CPU_INSTR(rl_HLmem)
 {
     DECOMP("RL [HL]")
 
-    uint8_t carry = (dev->mem[dev->cpu.HL.val] & 0x80) ? 1 : 0;
-    dev->mem[dev->cpu.HL.val] = (dev->mem[dev->cpu.HL.val] << 1) | dev->cpu.AF.flag.C;
+    uint8_t carry = (HLMEM & 0x80) ? 1 : 0;
+    HLMEM = (HLMEM << 1) | dev->cpu.AF.flag.C;
 
-    dev->cpu.AF.flag.Z = dev->mem[dev->cpu.HL.val] == 0;
+    dev->cpu.AF.flag.Z = HLMEM == 0;
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.C = carry;
@@ -188,7 +190,7 @@ CPU_INSTR(rl_HLmem)
 #define RR_R8(r8, r16) CPU_INSTR(rr_##r8) \
     { \
         DECOMP("RR " #r8) \
-        uint8_t carry = (dev->cpu.r16.byte.r8 & 0x01) ? 1 : 0; \
+        uint8_t carry = dev->cpu.r16.byte.r8 & 0x01; \
         dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 >> 1) | (dev->cpu.AF.flag.C ? 0x80 : 0); \
         dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
         dev->cpu.AF.flag.N = 0; \
@@ -207,10 +209,130 @@ CPU_INSTR(rr_HLmem)
 {
     DECOMP("RR [HL]")
 
-    uint8_t carry = (dev->mem[dev->cpu.HL.val] & 0x01) ? 1 : 0;
-    dev->mem[dev->cpu.HL.val] = (dev->mem[dev->cpu.HL.val] >> 1) | (dev->cpu.AF.flag.C ? 0x80 : 0);
+    uint8_t carry = HLMEM & 0x01;
+    HLMEM = (HLMEM >> 1) | (dev->cpu.AF.flag.C ? 0x80 : 0);
 
-    dev->cpu.AF.flag.Z = dev->mem[dev->cpu.HL.val] == 0;
+    dev->cpu.AF.flag.Z = HLMEM == 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = 0;
+    dev->cpu.AF.flag.C = carry;
+}
+
+#define SLA_R8(r8, r16) CPU_INSTR(sla_##r8) \
+    { \
+        DECOMP("SLA " #r8) \
+        uint8_t carry = (dev->cpu.r16.byte.r8 & 0x80) ? 1 : 0; \
+        dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 << 1); \
+        dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
+        dev->cpu.AF.flag.N = 0; \
+        dev->cpu.AF.flag.H = 0; \
+        dev->cpu.AF.flag.C = carry; \
+    }
+
+SLA_R8(B, BC)
+SLA_R8(C, BC)
+SLA_R8(D, DE)
+SLA_R8(E, DE)
+SLA_R8(H, HL)
+SLA_R8(L, HL)
+SLA_R8(A, AF)
+CPU_INSTR(sla_HLmem)
+{
+    DECOMP("SLA [HL]")
+
+    uint8_t carry = (HLMEM & 0x80) ? 1 : 0;
+    HLMEM = (HLMEM << 1);
+
+    dev->cpu.AF.flag.Z = HLMEM == 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = 0;
+    dev->cpu.AF.flag.C = carry;
+}
+
+#define SRA_R8(r8, r16) CPU_INSTR(sra_##r8) \
+    { \
+        DECOMP("SRA " #r8) \
+        dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 >> 1) | (dev->cpu.r16.byte.r8 & 0x80); \
+        dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
+        dev->cpu.AF.flag.N = 0; \
+        dev->cpu.AF.flag.H = 0; \
+        dev->cpu.AF.flag.C = 0; \
+    }
+
+SRA_R8(B, BC)
+SRA_R8(C, BC)
+SRA_R8(D, DE)
+SRA_R8(E, DE)
+SRA_R8(H, HL)
+SRA_R8(L, HL)
+SRA_R8(A, AF)
+CPU_INSTR(sra_HLmem)
+{
+    DECOMP("SRA [HL]")
+
+    HLMEM = (HLMEM >> 1) | (HLMEM & 0x80);
+
+    dev->cpu.AF.flag.Z = HLMEM == 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = 0;
+    dev->cpu.AF.flag.C = 0;
+}
+
+#define SWAP_R8(r8, r16) CPU_INSTR(swap_##r8) \
+    { \
+        DECOMP("SWAP " #r8) \
+        dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 >> 4) | (dev->cpu.r16.byte.r8 << 4); \
+        dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
+        dev->cpu.AF.flag.N = 0; \
+        dev->cpu.AF.flag.H = 0; \
+        dev->cpu.AF.flag.C = 0; \
+    }
+
+SWAP_R8(B, BC)
+SWAP_R8(C, BC)
+SWAP_R8(D, DE)
+SWAP_R8(E, DE)
+SWAP_R8(H, HL)
+SWAP_R8(L, HL)
+SWAP_R8(A, AF)
+CPU_INSTR(swap_HLmem)
+{ \
+    DECOMP("SWAP [HL]")
+
+    HLMEM = (HLMEM >> 4) | (HLMEM << 4);
+
+    dev->cpu.AF.flag.Z = HLMEM == 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = 0;
+    dev->cpu.AF.flag.C = 0;
+}
+
+#define SRL_R8(r8, r16) CPU_INSTR(srl_##r8) \
+    { \
+        DECOMP("SRL " #r8) \
+        uint8_t carry = dev->cpu.r16.byte.r8 & 0x01; \
+        dev->cpu.r16.byte.r8 = (dev->cpu.r16.byte.r8 >> 1); \
+        dev->cpu.AF.flag.Z = dev->cpu.r16.byte.r8 == 0; \
+        dev->cpu.AF.flag.N = 0; \
+        dev->cpu.AF.flag.H = 0; \
+        dev->cpu.AF.flag.C = carry; \
+    }
+
+SRL_R8(B, BC)
+SRL_R8(C, BC)
+SRL_R8(D, DE)
+SRL_R8(E, DE)
+SRL_R8(H, HL)
+SRL_R8(L, HL)
+SRL_R8(A, AF)
+CPU_INSTR(srl_HLmem)
+{
+    DECOMP("SRL [HL]")
+
+    uint8_t carry = HLMEM & 0x01;
+    HLMEM = (HLMEM >> 1);
+
+    dev->cpu.AF.flag.Z = HLMEM == 0;
     dev->cpu.AF.flag.N = 0;
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.C = carry;
