@@ -7,7 +7,7 @@
 #define BIT_U3_R8(bit, r8, r16) CPU_INSTR(bit_##bit##_##r8) \
     { \
         DECOMP("BIT " #bit ", " #r8) \
-        dev->cpu.AF.flag.Z = (dev->cpu.BC.byte.B & (1 << 0)) == 0; \
+        dev->cpu.AF.flag.Z = (dev->cpu.r16.byte.r8 & (1 << 0)) == 0; \
         dev->cpu.AF.flag.N = 0; \
         dev->cpu.AF.flag.H = 1; \
     }
@@ -335,3 +335,171 @@ CPU_INSTR(srl_HLmem)
     dev->cpu.AF.flag.H = 0;
     dev->cpu.AF.flag.C = carry;
 }
+
+#define RES_U3_R8(bit, r8, r16) CPU_INSTR(res_##bit##_##r8) \
+    { \
+        DECOMP("RES " #bit ", " #r8) \
+        dev->cpu.r16.byte.r8 = dev->cpu.r16.byte.r8 & ~(1 << bit); \
+    }
+
+#define RES_U3_HLMEM(bit) CPU_INSTR(res_##bit##_HLmem) \
+    { \
+        DECOMP("RES " #bit ", [HL]") \
+        HLMEM = HLMEM & ~(1 << bit); \
+    }
+
+RES_U3_R8(0, B, BC)
+RES_U3_R8(1, B, BC)
+RES_U3_R8(2, B, BC)
+RES_U3_R8(3, B, BC)
+RES_U3_R8(4, B, BC)
+RES_U3_R8(5, B, BC)
+RES_U3_R8(6, B, BC)
+RES_U3_R8(7, B, BC)
+
+RES_U3_R8(0, C, BC)
+RES_U3_R8(1, C, BC)
+RES_U3_R8(2, C, BC)
+RES_U3_R8(3, C, BC)
+RES_U3_R8(4, C, BC)
+RES_U3_R8(5, C, BC)
+RES_U3_R8(6, C, BC)
+RES_U3_R8(7, C, BC)
+
+RES_U3_R8(0, D, DE)
+RES_U3_R8(1, D, DE)
+RES_U3_R8(2, D, DE)
+RES_U3_R8(3, D, DE)
+RES_U3_R8(4, D, DE)
+RES_U3_R8(5, D, DE)
+RES_U3_R8(6, D, DE)
+RES_U3_R8(7, D, DE)
+
+RES_U3_R8(0, E, DE)
+RES_U3_R8(1, E, DE)
+RES_U3_R8(2, E, DE)
+RES_U3_R8(3, E, DE)
+RES_U3_R8(4, E, DE)
+RES_U3_R8(5, E, DE)
+RES_U3_R8(6, E, DE)
+RES_U3_R8(7, E, DE)
+
+RES_U3_R8(0, H, HL)
+RES_U3_R8(1, H, HL)
+RES_U3_R8(2, H, HL)
+RES_U3_R8(3, H, HL)
+RES_U3_R8(4, H, HL)
+RES_U3_R8(5, H, HL)
+RES_U3_R8(6, H, HL)
+RES_U3_R8(7, H, HL)
+
+RES_U3_R8(0, L, HL)
+RES_U3_R8(1, L, HL)
+RES_U3_R8(2, L, HL)
+RES_U3_R8(3, L, HL)
+RES_U3_R8(4, L, HL)
+RES_U3_R8(5, L, HL)
+RES_U3_R8(6, L, HL)
+RES_U3_R8(7, L, HL)
+
+RES_U3_HLMEM(0)
+RES_U3_HLMEM(1)
+RES_U3_HLMEM(2)
+RES_U3_HLMEM(3)
+RES_U3_HLMEM(4)
+RES_U3_HLMEM(5)
+RES_U3_HLMEM(6)
+RES_U3_HLMEM(7)
+
+RES_U3_R8(0, A, AF)
+RES_U3_R8(1, A, AF)
+RES_U3_R8(2, A, AF)
+RES_U3_R8(3, A, AF)
+RES_U3_R8(4, A, AF)
+RES_U3_R8(5, A, AF)
+RES_U3_R8(6, A, AF)
+RES_U3_R8(7, A, AF)
+
+#define SET_U3_R8(bit, r8, r16) CPU_INSTR(set_##bit##_##r8) \
+    { \
+        DECOMP("SET " #bit ", " #r8) \
+        dev->cpu.r16.byte.r8 = dev->cpu.r16.byte.r8 | (1 << bit); \
+    }
+
+#define SET_U3_HLMEM(bit) CPU_INSTR(set_##bit##_HLmem) \
+    { \
+        DECOMP("SET " #bit ", [HL]") \
+        HLMEM = HLMEM | (1 << bit); \
+    }
+
+SET_U3_R8(0, B, BC)
+SET_U3_R8(1, B, BC)
+SET_U3_R8(2, B, BC)
+SET_U3_R8(3, B, BC)
+SET_U3_R8(4, B, BC)
+SET_U3_R8(5, B, BC)
+SET_U3_R8(6, B, BC)
+SET_U3_R8(7, B, BC)
+
+SET_U3_R8(0, C, BC)
+SET_U3_R8(1, C, BC)
+SET_U3_R8(2, C, BC)
+SET_U3_R8(3, C, BC)
+SET_U3_R8(4, C, BC)
+SET_U3_R8(5, C, BC)
+SET_U3_R8(6, C, BC)
+SET_U3_R8(7, C, BC)
+
+SET_U3_R8(0, D, DE)
+SET_U3_R8(1, D, DE)
+SET_U3_R8(2, D, DE)
+SET_U3_R8(3, D, DE)
+SET_U3_R8(4, D, DE)
+SET_U3_R8(5, D, DE)
+SET_U3_R8(6, D, DE)
+SET_U3_R8(7, D, DE)
+
+SET_U3_R8(0, E, DE)
+SET_U3_R8(1, E, DE)
+SET_U3_R8(2, E, DE)
+SET_U3_R8(3, E, DE)
+SET_U3_R8(4, E, DE)
+SET_U3_R8(5, E, DE)
+SET_U3_R8(6, E, DE)
+SET_U3_R8(7, E, DE)
+
+SET_U3_R8(0, H, HL)
+SET_U3_R8(1, H, HL)
+SET_U3_R8(2, H, HL)
+SET_U3_R8(3, H, HL)
+SET_U3_R8(4, H, HL)
+SET_U3_R8(5, H, HL)
+SET_U3_R8(6, H, HL)
+SET_U3_R8(7, H, HL)
+
+SET_U3_R8(0, L, HL)
+SET_U3_R8(1, L, HL)
+SET_U3_R8(2, L, HL)
+SET_U3_R8(3, L, HL)
+SET_U3_R8(4, L, HL)
+SET_U3_R8(5, L, HL)
+SET_U3_R8(6, L, HL)
+SET_U3_R8(7, L, HL)
+
+SET_U3_HLMEM(0)
+SET_U3_HLMEM(1)
+SET_U3_HLMEM(2)
+SET_U3_HLMEM(3)
+SET_U3_HLMEM(4)
+SET_U3_HLMEM(5)
+SET_U3_HLMEM(6)
+SET_U3_HLMEM(7)
+
+SET_U3_R8(0, A, AF)
+SET_U3_R8(1, A, AF)
+SET_U3_R8(2, A, AF)
+SET_U3_R8(3, A, AF)
+SET_U3_R8(4, A, AF)
+SET_U3_R8(5, A, AF)
+SET_U3_R8(6, A, AF)
+SET_U3_R8(7, A, AF)
