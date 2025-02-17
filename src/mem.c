@@ -15,3 +15,11 @@ void mem_destroy(uint8_t* mem)
 {
     free(mem);
 }
+
+void mem_load_rom(uint8_t* mem, uint8_t* rom, uint32_t len)
+{
+    for (uint32_t i = 0; i < len; i++)
+    {
+        mem[i] = rom[i];
+    }
+}

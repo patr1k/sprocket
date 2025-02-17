@@ -12,19 +12,19 @@ CPU_INSTR(halt)
 #define LD_R8_R8(r8src, r8dst, r16src, r16dst) CPU_INSTR(ld_##r8dst##_##r8src) \
     { \
         DECOMP("LD " #r8dst ", " #r8src) \
-        dev->cpu.##r16dst.byte.##r8dst = dev->cpu.##r16src.byte.##r8src; \
+        dev->cpu.r16dst.byte.r8dst = dev->cpu.r16src.byte.r8src; \
     }
 
 #define LD_R8_HL(r8dst, r16dst) CPU_INSTR(ld_##r8dst##_HLmem) \
     { \
         DECOMP("LD " #r8dst ", [HL]") \
-        dev->cpu.##r16dst.byte.##r8dst = dev->mem[dev->cpu.HL.val]; \
+        dev->cpu.r16dst.byte.r8dst = dev->mem[dev->cpu.HL.val]; \
     }
 
 #define LD_HL_R8(r8src, r16src) CPU_INSTR(ld_HLmem_##r8src) \
     { \
         DECOMP("LD [HL], " #r8src) \
-        dev->mem[dev->cpu.HL.val] = dev->cpu.##r16src.byte.##r8src; \
+        dev->mem[dev->cpu.HL.val] = dev->cpu.r16src.byte.r8src; \
     }
 
 LD_R8_R8(B, B, BC, BC)

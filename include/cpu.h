@@ -91,8 +91,23 @@ struct cpu_state
         } byte;
         uint16_t val;
     } PC;
-    bool IME;
+    union {
+        struct {
+            uint8_t : 4;
+            uint8_t IME : 1;
+            uint8_t HALT : 1;
+            uint8_t STOP : 1;
+            uint8_t LOCKED : 1;
+        } flag;
+        uint8_t val;
+    } mode;
+    uint8_t IR;
 };
+
+#define MODE_IME    0x8
+#define MODE_HALT   0x4
+#define MODE_STOP   0x2
+#define MODE_LOCKED 0x1
 
 struct gbc
 {
@@ -121,3 +136,5 @@ struct gbc
 
 void (*cpu_isa[0xFF])(struct gbc *);
 void (*cpu_isa_cb[0xFF])(struct gbc *);
+
+void cpu_hard_lock(struct gbc *dev);

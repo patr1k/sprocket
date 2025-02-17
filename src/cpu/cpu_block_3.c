@@ -133,7 +133,7 @@ CPU_INSTR(ret)
 #define RET_COND(cond_sym, cond_stmt) CPU_INSTR(ret_##cond_sym) \
     { \
         DECOMP("RET " #cond_sym) \
-        if (dev->cpu.AF.flag.##cond_stmt) \
+        if (dev->cpu.AF.flag.cond_stmt) \
             dev->cpu.PC.val = POP_WORD(); \
     }
 
@@ -150,14 +150,14 @@ CPU_INSTR(reti)
     dev->cpu.PC.byte.H = dev->mem[dev->cpu.SP.val + 1];
     dev->cpu.SP.val = dev->cpu.SP.val + 2;
 
-    dev->cpu.IME = true;
+    dev->cpu.mode.flag.IME = 1;
 }
 
 #define JP_COND_A16(cond_sym, cond_stmt) CPU_INSTR(jp_##cond_sym##_a16) \
     { \
         uint16_t a16 = FETCH_WORD(); \
         DECOMP("JP " #cond_sym ", 0x%x", a16) \
-        if (dev->cpu.AF.flag.##cond_stmt) \
+        if (dev->cpu.AF.flag.cond_stmt) \
         dev->cpu.PC.val = a16; \
     }
 
@@ -184,8 +184,8 @@ CPU_INSTR(jp_HL)
 #define CALL_COND_A16(cond_sym, cond_stmt) CPU_INSTR(call_##cond_sym##_a16) \
     { \
         uint16_t a16 = FETCH_WORD(); \
-        DECOMP("CALL " #cond_sym ", 0x%x") \
-        if (dev->cpu.AF.flag.##cond_stmt) \
+        DECOMP("CALL " #cond_sym ", 0x%x", a16) \
+        if (dev->cpu.AF.flag.cond_stmt) \
         { \
             PUSH_WORD(dev->cpu.PC.val); \
             dev->cpu.PC.val = a16; \
@@ -200,7 +200,7 @@ CALL_COND_A16(NC, C == 0)
 CPU_INSTR(call_a16)
 {
     uint16_t a16 = FETCH_WORD();
-    DECOMP("CALL 0x%x")
+    DECOMP("CALL 0x%x", a16)
 
     PUSH_WORD(dev->cpu.PC.val);
     dev->cpu.PC.val = a16;
@@ -225,7 +225,7 @@ RST_VEC(38, 0x01C0)
 #define POP_R16(r16) CPU_INSTR(pop_##r16) \
     { \
         DECOMP("POP " #r16) \
-        dev->cpu.##r16.val = POP_WORD(); \
+        dev->cpu.r16.val = POP_WORD(); \
     }
 
 POP_R16(BC)
@@ -236,7 +236,7 @@ POP_R16(AF)
 #define PUSH_R16(r16) CPU_INSTR(push_##r16) \
     { \
         DECOMP("PUSH " #r16) \
-        PUSH_WORD(dev->cpu.##r16.val); \
+        PUSH_WORD(dev->cpu.r16.val); \
     }
 
 PUSH_R16(BC)

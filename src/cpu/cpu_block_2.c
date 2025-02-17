@@ -7,7 +7,7 @@
 #define ADD_A_R8(r8src, r16src) CPU_INSTR(add_A_##r8src) \
     { \
         DECOMP("ADD A, " #r8src) \
-        uint8_t reg = dev->cpu.##r16src.byte.##r8src; \
+        uint8_t reg = dev->cpu.r16src.byte.r8src ; \
         uint16_t result16 = dev->cpu.AF.byte.A + reg; \
         uint8_t result8 = result16 & 0xFF; \
         uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; \
@@ -22,7 +22,7 @@
 #define ADC_A_R8(r8src, r16src) CPU_INSTR(adc_A_##r8src) \
     { \
         DECOMP("ADD A, " #r8src) \
-        uint8_t reg = dev->cpu.##r16src.byte.##r8src; \
+        uint8_t reg = dev->cpu.r16src.byte.r8src ; \
         uint16_t result16 = dev->cpu.AF.byte.A + reg + dev->cpu.AF.flag.C; \
         uint8_t result8 = result16 & 0xFF; \
         uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; \
@@ -37,7 +37,7 @@
 #define SUB_A_R8(r8src, r16src) CPU_INSTR(sub_A_##r8src) \
     { \
         DECOMP("SUB A, " #r8src) \
-        uint8_t reg = dev->cpu.##r16src.byte.##r8src; \
+        uint8_t reg = dev->cpu.r16src.byte.r8src; \
         uint16_t result16 = dev->cpu.AF.byte.A - reg; \
         uint8_t result8 = result16 & 0xFF; \
         uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; \
@@ -52,7 +52,7 @@
 #define SBC_A_R8(r8src, r16src) CPU_INSTR(sbc_A_##r8src) \
     { \
         DECOMP("SBC A, " #r8src) \
-        uint8_t reg = dev->cpu.##r16src.byte.##r8src; \
+        uint8_t reg = dev->cpu.r16src.byte.r8src; \
         uint16_t result16 = dev->cpu.AF.byte.A - reg - dev->cpu.AF.flag.C; \
         uint8_t result8 = result16 & 0xFF; \
         uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; \
@@ -67,7 +67,7 @@
 #define AND_A_R8(r8src, r16src) CPU_INSTR(and_A_##r8src) \
     { \
         DECOMP("AND A, " #r8src) \
-        dev->cpu.AF.byte.A &= dev->cpu.##r16src.byte.##r8src; \
+        dev->cpu.AF.byte.A &= dev->cpu.r16src.byte.r8src; \
         dev->cpu.AF.flag.N = 0; \
         dev->cpu.AF.flag.C = 0; \
         dev->cpu.AF.flag.H = 1; \
@@ -77,7 +77,7 @@
 #define XOR_A_R8(r8src, r16src) CPU_INSTR(xor_A_##r8src) \
     { \
         DECOMP("XOR A, " #r8src) \
-        dev->cpu.AF.byte.A ^= dev->cpu.##r16src.byte.##r8src; \
+        dev->cpu.AF.byte.A ^= dev->cpu.r16src.byte.r8src; \
         dev->cpu.AF.flag.N = 0; \
         dev->cpu.AF.flag.C = 0; \
         dev->cpu.AF.flag.H = 0; \
@@ -87,7 +87,7 @@
 #define OR_A_R8(r8src, r16src) CPU_INSTR(or_A_##r8src) \
     { \
         DECOMP("OR A, " #r8src) \
-        dev->cpu.AF.byte.A |= dev->cpu.##r16src.byte.##r8src; \
+        dev->cpu.AF.byte.A |= dev->cpu.r16src.byte.r8src; \
         dev->cpu.AF.flag.N = 0; \
         dev->cpu.AF.flag.C = 0; \
         dev->cpu.AF.flag.H = 0; \
@@ -97,7 +97,7 @@
 #define CP_A_R8(r8src, r16src) CPU_INSTR(cp_A_##r8src) \
     { \
         DECOMP("CP A, " #r8src) \
-        uint8_t reg = dev->cpu.##r16src.byte.##r8src; \
+        uint8_t reg = dev->cpu.r16src.byte.r8src; \
         uint16_t result16 = dev->cpu.AF.byte.A - reg; \
         uint8_t result8 = result16; \
         uint8_t half = ((dev->cpu.AF.byte.A ^ reg ^ result8) & 0x10) > 0; \

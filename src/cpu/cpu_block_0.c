@@ -596,5 +596,6 @@ CPU_INSTR(jr_c_r8)
 CPU_INSTR(stop)
 {
     DECOMP("STOP")
+    dev->cpu.mode.flag.STOP = 1;
     ++dev->cpu.PC.val;
 }

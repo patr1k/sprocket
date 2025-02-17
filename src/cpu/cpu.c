@@ -1,5 +1,17 @@
 #include "cpu_isa.h"
 
+void cpu_hard_lock(struct gbc *dev)
+{
+    DECOMP("0x%x !!! HARD LOCK !!!", dev->cpu.IR)
+    dev->cpu.mode.flag.LOCKED = 1;
+}
+
+void cpu_cb_ext(struct gbc *dev)
+{
+    dev->cpu.IR = dev->mem[dev->cpu.PC.val++];
+    cpu_isa_cb[dev->cpu.IR](dev);
+}
+
 void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0x00 */ cpu_nop,
     /* 0x01 */ cpu_ld_BC_d16,
@@ -216,7 +228,7 @@ void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0xC8 */ cpu_ret_Z,
     /* 0xC9 */ cpu_ret,
     /* 0xCA */ cpu_jp_Z_a16,
-    /* 0xCB */ NULL,
+    /* 0xCB */ cpu_cb_ext,
     /* 0xCC */ cpu_call_Z_a16,
     /* 0xCD */ cpu_call_a16,
     /* 0xCE */ cpu_adc_A_d8,
@@ -240,4 +252,38 @@ void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0xDF */ cpu_rst_18h,
 };
 
-void (*cpu_isa_cb[0xFF])(struct gbc *) = {};
+void (*cpu_isa_cb[0xFF])(struct gbc *) = {
+    /* 0x00 */ cpu_rlc_B,
+    /* 0x01 */ cpu_rlc_C,
+    /* 0x02 */ cpu_rlc_D,
+    /* 0x03 */ cpu_rlc_E,
+    /* 0x04 */ cpu_rlc_H,
+    /* 0x05 */ cpu_rlc_L,
+    /* 0x06 */ cpu_rlc_HLmem,
+    /* 0x07 */ cpu_rlc_A,
+    /* 0x08 */ cpu_rrc_B,
+    /* 0x09 */ cpu_rrc_C,
+    /* 0x0A */ cpu_rrc_D,
+    /* 0x0B */ cpu_rrc_E,
+    /* 0x0C */ cpu_rrc_H,
+    /* 0x0D */ cpu_rrc_L,
+    /* 0x0E */ cpu_rrc_HLmem,
+    /* 0x0F */ cpu_rrc_A,
+
+    /* 0x10 */ cpu_rl_B,
+    /* 0x11 */ cpu_rl_C,
+    /* 0x12 */ cpu_rl_D,
+    /* 0x13 */ cpu_rl_E,
+    /* 0x14 */ cpu_rl_H,
+    /* 0x15 */ cpu_rl_L,
+    /* 0x16 */ cpu_rl_HLmem,
+    /* 0x17 */ cpu_rl_A,
+    /* 0x18 */ cpu_rr_B,
+    /* 0x19 */ cpu_rr_C,
+    /* 0x1A */ cpu_rr_D,
+    /* 0x1B */ cpu_rr_E,
+    /* 0x1C */ cpu_rr_H,
+    /* 0x1D */ cpu_rr_L,
+    /* 0x1E */ cpu_rr_HLmem,
+    /* 0x1F */ cpu_rr_A,
+};
