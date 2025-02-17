@@ -5,7 +5,7 @@
 
 uint8_t* mem_create()
 {
-    const uint16_t size = 0xFFFF;
+    const uint32_t size = 0x10000;
     uint8_t *mem = (uint8_t*)malloc(sizeof(uint8_t) * size);
     memset(mem, 0, size);
     return mem;

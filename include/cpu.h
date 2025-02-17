@@ -136,5 +136,5 @@ struct gbc
 #define DECOMP(...)
 #endif
 
-void (*cpu_isa[0xFF])(struct gbc *);
-void (*cpu_isa_cb[0xFF])(struct gbc *);
+void (*cpu_isa[0x100])(struct gbc *);
+void (*cpu_isa_cb[0x100])(struct gbc *);

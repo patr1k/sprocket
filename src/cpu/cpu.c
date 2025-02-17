@@ -1,18 +1,18 @@
 #include "cpu_isa.h"
 
-void cpu_hard_lock(struct gbc *dev)
+void cpu_HARD_LOCK(struct gbc *dev)
 {
     DECOMP("0x%x !!! HARD LOCK !!!", dev->cpu.IR)
     dev->cpu.mode.flag.LOCKED = 1;
 }
 
-void cpu_cb_ext(struct gbc *dev)
+void cpu_CB_EXT(struct gbc *dev)
 {
     dev->cpu.IR = dev->mem[dev->cpu.PC.val++];
     cpu_isa_cb[dev->cpu.IR](dev);
 }
 
-void (*cpu_isa[0xFF])(struct gbc *) = {
+void (*cpu_isa[0x100])(struct gbc *) = {
     /* 0x00 */ cpu_nop,
     /* 0x01 */ cpu_ld_BC_d16,
     /* 0x02 */ cpu_ld_BCmem_A,
@@ -228,7 +228,7 @@ void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0xC8 */ cpu_ret_Z,
     /* 0xC9 */ cpu_ret,
     /* 0xCA */ cpu_jp_Z_a16,
-    /* 0xCB */ cpu_cb_ext,
+    /* 0xCB */ cpu_CB_EXT,
     /* 0xCC */ cpu_call_Z_a16,
     /* 0xCD */ cpu_call_a16,
     /* 0xCE */ cpu_adc_A_d8,
@@ -237,7 +237,7 @@ void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0xD0 */ cpu_ret_NC,
     /* 0xD1 */ cpu_pop_DE,
     /* 0xD2 */ cpu_jp_NC_a16,
-    /* 0xD3 */ NULL,
+    /* 0xD3 */ cpu_HARD_LOCK,
     /* 0xD4 */ cpu_call_NC_a16,
     /* 0xD5 */ cpu_push_DE,
     /* 0xD6 */ cpu_sub_A_d8,
@@ -245,14 +245,48 @@ void (*cpu_isa[0xFF])(struct gbc *) = {
     /* 0xD8 */ cpu_ret_C,
     /* 0xD9 */ cpu_reti,
     /* 0xDA */ cpu_jp_C_a16,
-    /* 0xDB */ NULL,
+    /* 0xDB */ cpu_HARD_LOCK,
     /* 0xDC */ cpu_call_C_a16,
-    /* 0xDD */ NULL,
+    /* 0xDD */ cpu_HARD_LOCK,
     /* 0xDE */ cpu_sbc_A_d8,
     /* 0xDF */ cpu_rst_18h,
+
+    /* 0xE0 */ cpu_ldh_a8_A,
+    /* 0xE1 */ cpu_pop_HL,
+    /* 0xE2 */ cpu_ldh_Cmem_A,
+    /* 0xE3 */ cpu_HARD_LOCK,
+    /* 0xE4 */ cpu_HARD_LOCK,
+    /* 0xE5 */ cpu_push_HL,
+    /* 0xE6 */ cpu_and_A_d8,
+    /* 0xE7 */ cpu_rst_20h,
+    /* 0xE8 */ cpu_add_SP_r8,
+    /* 0xE9 */ cpu_jp_HL,
+    /* 0xEA */ cpu_ld_a16_A,
+    /* 0xEB */ cpu_HARD_LOCK,
+    /* 0xEC */ cpu_HARD_LOCK,
+    /* 0xED */ cpu_HARD_LOCK,
+    /* 0xEE */ cpu_xor_A_d8,
+    /* 0xEF */ cpu_rst_28h,
+
+    /* 0xF0 */ cpu_ldh_A_a8,
+    /* 0xF1 */ cpu_pop_AF,
+    /* 0xF2 */ cpu_ldh_A_Cmem,
+    /* 0xF3 */ cpu_di,
+    /* 0xF4 */ cpu_HARD_LOCK,
+    /* 0xF5 */ cpu_push_AF,
+    /* 0xF6 */ cpu_or_A_d8,
+    /* 0xF7 */ cpu_rst_30h,
+    /* 0xF8 */ cpu_ld_HL_SPr8,
+    /* 0xF9 */ cpu_ld_SP_HL,
+    /* 0xFA */ cpu_ld_A_a16,
+    /* 0xFB */ cpu_ei,
+    /* 0xFC */ cpu_HARD_LOCK,
+    /* 0xFD */ cpu_HARD_LOCK,
+    /* 0xFE */ cpu_cp_A_d8,
+    /* 0xFF */ cpu_rst_38h,
 };
 
-void (*cpu_isa_cb[0xFF])(struct gbc *) = {
+void (*cpu_isa_cb[0x100])(struct gbc *) = {
     /* 0x00 */ cpu_rlc_B,
     /* 0x01 */ cpu_rlc_C,
     /* 0x02 */ cpu_rlc_D,

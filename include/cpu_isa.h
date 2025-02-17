@@ -288,7 +288,18 @@ CPU_INSTR(push_DE);
 CPU_INSTR(push_HL);
 CPU_INSTR(push_AF);
 
+CPU_INSTR(ldh_a8_A);
+CPU_INSTR(ldh_Cmem_A);
+CPU_INSTR(ld_a16_A);
+CPU_INSTR(ldh_A_a8);
+CPU_INSTR(ldh_A_Cmem);
+CPU_INSTR(ld_A_a16);
+CPU_INSTR(di);
+CPU_INSTR(ei);
 
+CPU_INSTR(add_SP_r8);
+CPU_INSTR(ld_HL_SPr8);
+CPU_INSTR(ld_SP_HL);
 
 /**
  * Block 3 Instructions (0xCB Extension)

@@ -243,3 +243,106 @@ PUSH_R16(BC)
 PUSH_R16(DE)
 PUSH_R16(HL)
 PUSH_R16(AF)
+
+CPU_INSTR(ldh_a8_A)
+{
+    uint8_t a8 = FETCH_BYTE();
+    DECOMP("LDH [0x%x], A", a8)
+
+    dev->mem[0xFF | a8] = dev->cpu.AF.byte.A;
+}
+
+CPU_INSTR(ldh_Cmem_A)
+{
+    uint8_t a8 = FETCH_BYTE();
+    DECOMP("LD [$FF00 + C], A")
+
+    dev->mem[0xFF | dev->cpu.BC.byte.C] = dev->cpu.AF.byte.A;
+}
+
+CPU_INSTR(ld_a16_A)
+{
+    uint8_t a16 = FETCH_WORD();
+    DECOMP("LD [0x%x], A", a16)
+
+    dev->mem[a16] = dev->cpu.AF.byte.A;
+}
+
+CPU_INSTR(ldh_A_a8)
+{
+    uint8_t a8 = FETCH_BYTE();
+    DECOMP("LDH A, [0x%x]", a8)
+
+    dev->cpu.AF.byte.A = dev->mem[0xFF | a8];
+}
+
+CPU_INSTR(ldh_A_Cmem)
+{
+    uint8_t a8 = FETCH_BYTE();
+    DECOMP("LD A, [$FF00 + C]")
+
+    dev->cpu.AF.byte.A = dev->mem[0xFF | dev->cpu.BC.byte.C];
+}
+
+CPU_INSTR(ld_A_a16)
+{
+    uint8_t a16 = FETCH_WORD();
+    DECOMP("LD A, [0x%x]", a16)
+
+    dev->cpu.AF.byte.A = dev->mem[a16];
+}
+
+CPU_INSTR(di)
+{
+    DECOMP("DI")
+    dev->cpu.mode.flag.IME = 0;
+}
+
+CPU_INSTR(ei)
+{
+    DECOMP("EI")
+    dev->cpu.mode.flag.IME = 1;
+}
+
+CPU_INSTR(add_SP_r8)
+{
+    int8_t r8 = FETCH_BYTE();
+    DECOMP("ADD SP, %i", r8)
+
+    uint16_t result16 = dev->cpu.SP.val + r8;
+    uint8_t result8 = result16;
+    uint8_t half = ((dev->cpu.SP.val  ^ r8 ^ result8) & 0x10) > 0;
+    uint8_t carry = (result16 & 0x100) > 0;
+
+    dev->cpu.SP.val = result8;
+
+    dev->cpu.AF.flag.Z = 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = half ? 1 : 0;
+    dev->cpu.AF.flag.C = carry ? 1 : 0;
+}
+
+CPU_INSTR(ld_HL_SPr8)
+{
+    int8_t r8 = FETCH_BYTE();
+    DECOMP("LD HL, SP + %i", r8)
+
+    uint16_t result16 = dev->cpu.SP.val + r8;
+    uint8_t result8 = result16;
+    uint8_t half = ((dev->cpu.SP.val  ^ r8 ^ result8) & 0x10) > 0;
+    uint8_t carry = (result16 & 0x100) > 0;
+
+    dev->cpu.HL.val = result8;
+
+    dev->cpu.AF.flag.Z = 0;
+    dev->cpu.AF.flag.N = 0;
+    dev->cpu.AF.flag.H = half ? 1 : 0;
+    dev->cpu.AF.flag.C = carry ? 1 : 0;
+}
+
+CPU_INSTR(ld_SP_HL)
+{
+    DECOMP("LD SP, HL")
+
+    dev->cpu.SP.val = dev->cpu.HL.val;
+}
