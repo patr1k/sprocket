@@ -109,12 +109,6 @@ struct cpu_state
 #define MODE_STOP   0x2
 #define MODE_LOCKED 0x1
 
-struct gbc
-{
-    struct cpu_state cpu;
-    uint8_t* mem;
-};
-
 #define FETCH_BYTE() (dev->mem[dev->cpu.PC.val++])
 #define FETCH_WORD() (dev->mem[dev->cpu.PC.val++] | (dev->mem[dev->cpu.PC.val++] << 8))
 
@@ -125,8 +119,6 @@ struct gbc
 
 #define HLMEM dev->mem[dev->cpu.HL.val]
 
-#define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
-
 #define DECOMP_ON 1
 // Decompilation logging
 #ifdef DECOMP_ON
@@ -135,6 +127,3 @@ struct gbc
 #else
 #define DECOMP(...)
 #endif
-
-void (*cpu_isa[0x100])(struct gbc *);
-void (*cpu_isa_cb[0x100])(struct gbc *);
