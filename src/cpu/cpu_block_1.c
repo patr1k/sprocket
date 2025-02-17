@@ -7,6 +7,10 @@
 CPU_INSTR(halt)
 {
     DECOMP("HALT")
+    
+    // HALT doesn't increment PC after instruction fetch...
+    // so we need to decrement PC to reflect that
+    dev->cpu.PC.val--;
 }
 
 #define LD_R8_R8(r8src, r8dst, r16src, r16dst) CPU_INSTR(ld_##r8dst##_##r8src) \

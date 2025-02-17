@@ -247,7 +247,7 @@ PUSH_R16(AF)
 CPU_INSTR(ldh_a8_A)
 {
     uint8_t a8 = FETCH_BYTE();
-    DECOMP("LDH [0x%x], A", a8)
+    DECOMP("LD [$FF00 + $%02x], A", a8)
 
     dev->mem[0xFF | a8] = dev->cpu.AF.byte.A;
 }
@@ -271,7 +271,7 @@ CPU_INSTR(ld_a16_A)
 CPU_INSTR(ldh_A_a8)
 {
     uint8_t a8 = FETCH_BYTE();
-    DECOMP("LDH A, [0x%x]", a8)
+    DECOMP("LD A, [$FF00 + $%02x]", a8)
 
     dev->cpu.AF.byte.A = dev->mem[0xFF | a8];
 }

@@ -32,10 +32,10 @@ int main()
         gameboy.cpu.PC.val++;
         cpu_isa[gameboy.cpu.IR](&gameboy);
         step++;
-        if (step == 50) gameboy.cpu.mode.flag.LOCKED = 1;
+        if (step == 10000) gameboy.cpu.mode.flag.LOCKED = 1;
     }
 
-    printf("CPU stopped on B = 0x66\n");
+    printf("CPU stopped on step = %llu\n", step);
 
     mem_destroy(gameboy.mem);
 
