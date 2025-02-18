@@ -1,7 +1,6 @@
 #pragma once
 
 #include "gameboy.h"
-#include "boot_rom.h"
 
 #include <stdint.h>
 

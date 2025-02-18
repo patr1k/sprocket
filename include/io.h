@@ -1,0 +1,17 @@
+#pragma once
+
+#define JOYPAD_INPUT    0xFF00
+#define SERIAL_XFER     0xFF01
+#define TIMER_DIVIDER   0xFF04
+#define INTERRUPTS      0xFF0F
+
+#define P1_SELECT_BTN   0b00100000
+#define P1_SELECT_DPAD  0b00010000
+#define P1_DPAD_DOWN    0b00001000
+#define P1_BTN_START    0b00001000
+#define P1_DPAD_UP      0b00000100
+#define P1_BTN_SELECT   0b00000100
+#define P1_DPAD_LEFT    0b00000010
+#define P1_BTN_B        0b00000010
+#define P1_DPAD_RIGHT   0b00000001
+#define P1_BTN_A        0b00000001

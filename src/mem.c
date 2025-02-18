@@ -1,4 +1,5 @@
 #include "mem.h"
+#include "boot_rom.h"
 
 #include <stdlib.h>
 #include <memory.h>

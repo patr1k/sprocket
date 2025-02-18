@@ -5,9 +5,6 @@
 
 #define CPU_INSTR(name) void cpu_##name(struct gbc *dev)
 
-void (*cpu_isa[0x100])(struct gbc *);
-void (*cpu_isa_cb[0x100])(struct gbc *);
-
 /**
  * Block 0 Instructions
  */

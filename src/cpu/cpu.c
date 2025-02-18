@@ -1,5 +1,8 @@
 #include "cpu_isa.h"
 
+void (*cpu_isa[0x100])(struct gbc *);
+void (*cpu_isa_cb[0x100])(struct gbc *);
+
 void cpu_HARD_LOCK(struct gbc *dev)
 {
     DECOMP("0x%x !!! HARD LOCK !!!", dev->cpu.IR)

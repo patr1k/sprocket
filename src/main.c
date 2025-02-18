@@ -6,6 +6,9 @@
 #include "cpu_isa.h"
 #include "mem.h"
 
+extern void (*cpu_isa[0x100])(struct gbc *);
+extern void (*cpu_isa_cb[0x100])(struct gbc *);
+
 int main()
 {
     struct gbc gameboy = {};
@@ -32,7 +35,7 @@ int main()
         if (step == 10000) gameboy.cpu.mode.flag.LOCKED = 1;
     }
 
-    printf("CPU stopped on step = %lu\n", step);
+    printf("CPU stopped on step = %llu\n", step);
 
     mem_destroy(gameboy.mem);
 
